@@ -434,7 +434,7 @@
     // Power-up Charges (Limited Use)
     let pasopatiUses = 3;
     let gundalaUses = 3;
-    let banyuUses = 2;
+    let banyuUses = 1;
 
     // --- AUDIO SYNTHESIZER ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -890,7 +890,7 @@
     startGameBtn.addEventListener('click', () => {
       startModal.style.display = 'none';
       isGameStarted = true;
-      pasopatiUses = 3; gundalaUses = 3; banyuUses = 2;
+      pasopatiUses = 3; gundalaUses = 3; banyuUses = 1;
       updatePowerupUI();
       if (audioCtx.state === 'suspended') audioCtx.resume();
       spawnWave();
@@ -914,7 +914,7 @@
 
     restartBtn.addEventListener('click', () => {
       score = 0; level = 1; lives = 3; isGameOver = false; isGameStarted = true; currentWord = null;
-      pasopatiUses = 3; gundalaUses = 3; banyuUses = 2;
+      pasopatiUses = 3; gundalaUses = 3; banyuUses = 1;
       updatePowerupUI();
       scoreText.textContent = score;
       levelText.textContent = level;
