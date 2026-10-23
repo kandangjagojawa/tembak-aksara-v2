@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bedhil Aksara Jawa (Deluxe Edition)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese:wght@400;700&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, #fff7e6 0%, transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, #ffe0b2 0%, transparent 50%),
+        linear-gradient(180deg, #fdf6e3 0%, #efebe9 55%, #d7ccc8 100%);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      color: #3e2723;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .batik {
+      position: absolute; inset: 0; opacity: 0.06;
+      background-image:
+        repeating-linear-gradient(45deg, #5d4037 0 1px, transparent 1px 12px),
+        repeating-linear-gradient(-45deg, #8d6e63 0 1px, transparent 1px 18px);
+      pointer-events: none;
+    }
+    header {
+      width: 100%; max-width: 1000px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 18px;
+      background: #3e2723; color: #ffecb3;
+      box-shadow: 0 4px 18px rgba(62,39,35,0.3);
+      z-index: 10;
+    }
+    .brand { display: flex; flex-direction: column; line-height: 1.1; }
+    .brand .latin { font-weight: 800; letter-spacing: 0.04em; font-size: 16px; }
+    .brand .jawa { font-family: 'Noto Sans Javanese', serif; font-size: 18px; color: #ffcc80; margin-top: 2px; }
+    .stats { display: flex; gap: 10px; align-items: center; }
+    .stat-pill { background: #4e342e; border: 1px solid #6d4c41; padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; display: flex; gap: 6px; align-items: center; }
+
+    .game-shell {
+      width: 100%; max-width: 1000px;
+      display: grid; grid-template-columns: 1fr 280px; gap: 16px;
+      padding: 16px;
+    }
+    @media (max-width: 840px) { .game-shell { grid-template-columns: 1fr; } }
+
+    .game-area {
+      position: relative;
+      height: 580px;
+      background: linear-gradient(180deg, #fff8e1 0%, #ffe0b2 35%, #f5d0a0 65%, #d7a76f 100%);
+      border-radius: 18px; overflow: hidden;
+      border: 3px solid #5d4037;
+      box-shadow: inset 0 0 0 4px #ffecb3, 0 12px 28px rgba(62,39,35,0.2);
+      display: flex; flex-direction: column;
+    }
+    canvas#particles { position: absolute; inset: 0; pointer-events: none; z-index: 12; }
+
+    /* Word Target Announcement Banner */
+    .word-banner {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #3e2723, #5d4037);
+      color: #ffecb3;
+      border: 3px solid #ffb300;
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+      z-index: 15;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .word-banner .word-label { font-size: 11px; background: #ffb300; color: #3e2723; padding: 2px 8px; border-radius: 999px; font-weight: 900; }
+    .word-banner .word-syllables { font-size: 17px; color: #ffffff; letter-spacing: 0.08em; }
+    .word-banner .word-syllables .active-syl { color: #ffeb3b; text-decoration: underline; font-weight: 900; text-shadow: 0 0 8px rgba(255,235,59,0.8); }
+
+    .word-banner.explode {
+      animation: wordExplode 0.8s forwards ease-out;
+    }
+    @keyframes wordExplode {
+      0% { transform: translateX(-50%) scale(1); filter: brightness(1); }
+      40% { transform: translateX(-50%) scale(1.4) rotate(-3deg); filter: brightness(2.5) drop-shadow(0 0 24px #ff6f00); }
+      100% { transform: translateX(-50%) scale(0) rotate(20deg); opacity: 0; }
+    }
+
+    .target-field { position: relative; flex: 1; }
+    
+    /* Target Box */
+    .target-box {
+      position: absolute; top: 20px; 
+      width: 86px; height: 92px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #fff3e0 0%, #ffcc80 100%);
+      border: 3px solid #5d4037; border-radius: 14px;
+      box-shadow: 0 6px 0 #3e2723, 0 8px 16px rgba(0,0,0,0.15);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 4px 6px;
+      overflow: visible;
+      box-sizing: border-box;
+      color: #3e2723;
+      transition: top 0.1s linear;
+      text-align: center;
+    }
+    .target-box .jawa-text {
+      font-family: 'Noto Sans Javanese', serif;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      white-space: nowrap;
+      line-height: 1;
+      padding-bottom: 2px;
+    }
+    .target-box .latin-text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Cannon */
+    .cannon-stage { position: relative; height: 130px; width: 100%; pointer-events: none; }
+    .rail {
+      position: absolute; left: 3%; right: 3%; bottom: 15px; height: 22px;
+      background: #5d4037; border: 2px solid #3e2723; border-radius: 6px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.2);
+    }
+    .cannon-wrap {
+      position: absolute; bottom: 20px; width: 170px; height: 110px;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      transition: left 0.05s ease-out; z-index: 6;
+    }
+    .cannon-wrap.recoil { animation: recoil 0.15s ease; }
+    @keyframes recoil { 0%{ transform: translateX(-50%) translateY(0); } 50%{ transform: translateX(-50%) translateY(8px); } 100%{ transform: translateX(-50%) translateY(0); } }
+
+    .laser {
+      position: absolute; bottom: 110px; top: 0; width: 2px; transform: translateX(-50%);
+      background: repeating-linear-gradient(180deg, rgba(255,235,59,0.8) 0 8px, transparent 8px 16px);
+      pointer-events: none; z-index: 4;
+    }
+
+    .cannon-mouth { width: 46px; height: 24px; background: #1a1a1a; border: 3px solid #3e2723; border-bottom: 0; border-radius: 10px 10px 0 0; }
+    .cannon-body {
+      width: 160px; height: 60px; margin-top: -4px;
+      background: linear-gradient(180deg, #6d4c41 0%, #3e2723 100%);
+      border: 3px solid #1c110f; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 0 #1c110f;
+    }
+    .plaque {
+      background: #fffdf5; border: 3px solid #1c110f; border-radius: 10px;
+      padding: 4px 10px; font-weight: 900; font-size: 22px; color: #1a1a1a;
+      max-width: 146px; text-align: center; overflow: visible; white-space: nowrap;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .plaque.jawa-plaque {
+      font-family: 'Noto Sans Javanese', serif;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .projectile {
+      position: absolute; width: 22px; height: 22px; transform: translateX(-50%);
+      background: radial-gradient(circle at 30% 30%, #fff8e1, #ffb300 55%, #ff6f00);
+      border: 2px solid #1c110f; border-radius: 50%;
+      box-shadow: 0 0 12px #ffb300; z-index: 8;
+    }
+
+    /* Controls */
+    .controls {
+      display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; padding: 10px;
+      background: #ffecb3; border-top: 3px solid #5d4037; z-index: 10;
+    }
+    .control-box { background: #ffffffc9; border: 2px dashed #a1887f; border-radius: 12px; padding: 8px; touch-action: none; }
+    .control-label { font-size: 10px; font-weight: 800; color: #6d4c41; margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .slider-track {
+      height: 44px; background: #d7ccc8; border: 2px solid #8d6e63; border-radius: 999px;
+      position: relative; cursor: ew-resize; overflow: hidden;
+    }
+    .slider-thumb {
+      position: absolute; top: 50%; width: 44px; height: 36px; transform: translate(-50%,-50%);
+      background: #3e2723; border-radius: 999px; border: 2px solid #ffecb3;
+      display: flex; align-items: center; justify-content: center; color: #ffecb3; font-weight: 900;
+    }
+    .shoot-btn {
+      width: 100%; height: 56px; background: linear-gradient(180deg, #ff6f00, #e65100);
+      border: 3px solid #1c110f; border-radius: 12px;
+      font-weight: 900; font-size: 16px; color: #fff8e1;
+      box-shadow: 0 5px 0 #1c110f; cursor: pointer;
+    }
+    .shoot-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #1c110f; }
+
+    /* Side Panel */
+    .side-panel { display: flex; flex-direction: column; gap: 10px; }
+    .card { background: #fffdf5; border: 2px solid #5d4037; border-radius: 14px; padding: 12px; box-shadow: 0 5px 0 #d7ccc8; }
+    .card h3 { font-size: 13px; margin-bottom: 8px; color: #3e2723; }
+    
+    .mode-indicator {
+      display: flex; align-items: center; gap: 8px;
+      background: #efebe9; border: 1px solid #bcaaa4; padding: 8px 12px; border-radius: 10px;
+      font-size: 12px; font-weight: 800; color: #3e2723;
+    }
+    .mode-indicator .badge {
+      background: #ff6f00; color: #fff; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 900;
+    }
+
+    .powerups { display: flex; gap: 8px; }
+    .p-btn { flex: 1; padding: 8px; background: #fff3e0; border: 2px solid #ffb300; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; }
+    .p-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .powerup-info {
+      font-size: 11px;
+      color: #5d4037;
+      margin-top: 10px;
+      line-height: 1.4;
+      background: #fff8e1;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px dashed #ffe0b2;
+    }
+    .powerup-info b { color: #3e2723; }
+
+    /* Overlay Modal */
+    .overlay {
+      position: absolute; inset: 0; background: rgba(62,39,35,0.85); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; z-index: 30;
+    }
+    .modal {
+      background: #fffdf5; border: 3px solid #ffb300; border-radius: 18px; padding: 20px;
+      width: 90%; max-width: 360px; text-align: center; box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+    }
+    .btn-primary {
+      background: linear-gradient(180deg, #ff6f00, #e65100);
+      color: #fff8e1;
+      border: 2px solid #1c110f;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-weight: 900;
+      width: 100%;
+      margin-top: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #1c110f;
+      font-size: 15px;
+    }
+    .btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 #1c110f; }
+  </style>
+</head>
+<body>
+  <div class="batik"></div>
+  <header>
+    <div class="brand">
+      <div class="latin">BEDHIL AKSARA JAWA</div>
+      <div class="jawa">ꦧꦼꦝꦶꦭ꧀ꦲꦏ꧀ꦱꦫꦗꦮ</div>
+    </div>
+    <div class="stats">
+      <div class="stat-pill">⭐ <span id="scoreText">0</span></div>
+      <div class="stat-pill">Lv <span id="levelText">1</span></div>
+      <div class="stat-pill" id="heartsText">❤❤❤</div>
+    </div>
+  </header>
+
+  <div class="game-shell">
+    <div class="game-area" id="gameArea">
+      <canvas id="particles"></canvas>
+
+      <!-- Word Banner Display (Appears when Word mode triggers) -->
+      <div class="word-banner" id="wordBanner">
+        <span class="word-label">TARGET KATA</span>
+        <span class="word-syllables" id="wordSyllables">MA - JA - PA - HIT</span>
+      </div>
+
+      <div class="target-field" id="targetField"></div>
+
+      <div class="laser" id="laserLine"></div>
+
+      <div class="cannon-stage">
+        <div class="rail"></div>
+        <div class="cannon-wrap" id="cannonWrap">
+          <div class="cannon-mouth"></div>
+          <div class="cannon-body">
+            <div class="plaque" id="cannonPlaque">TI</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="control-box" id="sliderBox">
+          <div class="control-label"><span>GESER POSISI MERIAM</span><span id="posPercent">50%</span></div>
+          <div class="slider-track" id="sliderTrack">
+            <div class="slider-thumb" id="sliderThumb" style="left: 50%;">↔</div>
+          </div>
+        </div>
+        <div class="control-box">
+          <div class="control-label"><span>TEMBAK</span><span>[SPACE]</span></div>
+          <button class="shoot-btn" id="shootBtn">💥 TEMBAK!</button>
+        </div>
+      </div>
+
+      <!-- Start Game Modal Pop-up -->
+      <div class="overlay" id="startModal">
+        <div class="modal">
+          <h2 style="font-family:'Noto Sans Javanese'; font-size: 26px; color: #3e2723; margin-bottom: 2px;">ꦱꦸꦒꦼꦁꦫꦮꦸꦃ</h2>
+          <h3 style="margin-bottom: 12px; color: #5d4037; font-size: 16px;">Bedhil Aksara Jawa</h3>
+          <div style="text-align: left; background: #fff8e1; border: 1px solid #ffe0b2; padding: 12px; border-radius: 12px; font-size: 12px; line-height: 1.6; color: #3e2723; margin-bottom: 14px;">
+            <p style="margin-bottom: 8px; font-weight: 800; color: #3e2723; border-bottom: 1px dashed #d7ccc8; padding-bottom: 4px;">📜 PETUNJUK PERMAINAN:</p>
+            <p style="margin-bottom: 8px;">⚡ <b>Kecepatan Mencepat:</b> Kotak aksara akan turun semakin cepat setiap kamu mencapai <b>50 poin</b> (naik level).</p>
+            <p style="margin-bottom: 8px;">✨ <b>Pusaka Power-Up:</b> Gunakan bantuan Pasopati (hapus 2 salah), Gundala (beku 4 dtk), dan Banyu Mili (+1 nyawa) saat terdesak.</p>
+            <p>🎯 <b>Cara Bermain:</b> Geser meriam dengan slider / panah & tekan tombol tembak atau tombol [SPACE].</p>
+          </div>
+          <button class="btn-primary" id="startGameBtn">🎮 MULAI GAME</button>
+        </div>
+      </div>
+
+      <!-- Game Over Modal -->
+      <div class="overlay" id="gameOverModal" style="display: none;">
+        <div class="modal">
+          <h2 style="font-family:'Noto Sans Javanese'; font-size: 28px;">ꦒꦩꦺꦎꦮ꦳ꦼꦂ</h2>
+          <h3 style="margin-top: 4px;">Permainan Selesai</h3>
+          <div style="font-size: 32px; font-weight: 900; margin: 10px 0;" id="finalScore">0 Poin</div>
+          <p style="font-size: 13px; color: #8d6e63;" id="highScoreText">Rekor Tertinggi: 0</p>
+          <button class="btn-primary" id="restartBtn">MAIN LAGI</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="side-panel">
+      <div class="card">
+        <h3>🎯 STATUS TIPE SOAL</h3>
+        <div class="mode-indicator" id="modeIndicator">
+          <span class="badge" id="typeBadge">ACAK</span>
+          <span id="typeText">Mencari soal...</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>✨ PUSAKA POWER-UP</h3>
+        <div class="powerups">
+          <button class="p-btn" id="btnPasopati">🏹 Pasopati<br><small>(Hapus 2)</small></button>
+          <button class="p-btn" id="btnGundala">⚡ Gundala<br><small>(Beku)</small></button>
+          <button class="p-btn" id="btnBanyu">💧 Banyu<br><small>(+1 Nyawa)</small></button>
+        </div>
+        <div class="powerup-info">
+          <b>Kegunaan Pusaka:</b><br>
+          • <b>🏹 Pasopati:</b> Menghilangkan 2 pilihan salah.<br>
+          • <b>⚡ Gundala:</b> Membekukan gerak kotak 4 detik.<br>
+          • <b>💧 Banyu Mili:</b> Menambah 1 nyawa ekstra.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📜 PAUGERAN SINGKAT</h3>
+        <p style="font-size: 12px; line-height: 1.5; color: #5d4037;">
+          • <b>Pepet (ꦼ)</b> = Ê (seperti 'segar')<br>
+          • <b>Taling (ꦺ)</b> = É (seperti 'sate')<br>
+          • <b>Cecak (ꦁ)</b> = Mati -NG<br>
+          • <b>Layar (ꦂ)</b> = Mati -R<br>
+          • <b>Wignyan (ꦃ)</b> = Mati -H
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- DICTIONARY & DATA SETS ---
+    const AKSARA_MAPPING = {
+      ha:'ꦲ', na:'ꦤ', ca:'ꦕ', ra:'ꦫ', ka:'ꦏ', da:'ꦢ', ta:'ꦠ', sa:'ꦱ', wa:'ꦮ', la:'ꦭ',
+      pa:'ꦥ', dha:'ꦝ', ja:'ꦗ', ya:'ꦪ', ma:'ꦩ', ga:'ꦒ', ba:'ꦧ', tha:'ꦛ', nga:'ꦔ', nya:'ꦚ'
+    };
+    const VOWELS = [
+      { l:'a', s:'' }, { l:'i', s:'ꦶ' }, { l:'u', s:'ꦸ' },
+      { l:'ê', s:'ꦼ' }, { l:'é', s:'ꦺ' }, { l:'o', s:'ꦺꦴ' }
+    ];
+    const SUFFIXES = [
+      { l:'', s:'' }, { l:'ng', s:'ꦁ' }, { l:'r', s:'ꦂ' }, { l:'h', s:'ꦃ' }
+    ];
+    const WORDS_BANK = [
+      { latin: ["MA", "JA", "PA", "HIT"], jawa: ["ꦩ", "ꦗ", "ꦥ", "ꦲꦶꦠ꧀"] },
+      { latin: ["SU", "RA", "BA", "YA"], jawa: ["ꦱꦸ", "ꦫ", "ꦧ", "ꦪ"] },
+      { latin: ["GA", "TOT", "KA", "CA"], jawa: ["ꦒ", "ꦠꦺꦴꦠ꧀", "ꦏ", "ꦕ"] },
+      { latin: ["MA", "TA", "RAM"], jawa: ["ꦩ", "ꦠ", "ꦫꦩ꧀"] },
+      { latin: ["BA", "TIK"], jawa: ["ꦧ", "ꦠꦶꦏ꧀"] },
+      { latin: ["PA", "JJA", "JA", "RAN"], jawa: ["ꦥ", "ꦗ꧀ꦗ", "ꦗ", "ꦫꦤ꧀"] },
+      { latin: ["CANDI"], jawa: ["ꦕꦤ꧀ꦢꦶ"] }
+    ];
+
+    // --- GAME STATE ---
+    let score = 0;
+    let level = 1;
+    let lives = 3;
+    let cannonPos = 50; // percentage
+    let targets = [];
+    let projectiles = [];
+    let particles = [];
+    let currentQuestion = null;
+    let currentType = 'standard'; // 'standard', 'terbalik', 'rangkai'
+    let wordProgressIdx = 0;
+    let currentWord = null;
+    let isFrozen = false;
+    let isGameOver = false;
+    let isGameStarted = false; // Start modal active initially
+
+    // --- AUDIO SYNTHESIZER ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'shoot') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+      } else if (type === 'hit') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08); // E5
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+      } else if (type === 'fanfare') {
+        const now = audioCtx.currentTime;
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g); g.connect(audioCtx.destination);
+          o.type = 'triangle';
+          o.frequency.setValueAtTime(freq, now + idx * 0.1);
+          g.gain.setValueAtTime(0.4, now + idx * 0.1);
+          g.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.3);
+          o.start(now + idx * 0.1);
+          o.stop(now + idx * 0.1 + 0.3);
+        });
+      } else if (type === 'wrong') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(110, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+      }
+    }
+
+    // --- DOM ELEMENTS ---
+    const gameArea = document.getElementById('gameArea');
+    const targetField = document.getElementById('targetField');
+    const cannonWrap = document.getElementById('cannonWrap');
+    const cannonPlaque = document.getElementById('cannonPlaque');
+    const laserLine = document.getElementById('laserLine');
+    const sliderTrack = document.getElementById('sliderTrack');
+    const sliderThumb = document.getElementById('sliderThumb');
+    const posPercent = document.getElementById('posPercent');
+    const shootBtn = document.getElementById('shootBtn');
+    const scoreText = document.getElementById('scoreText');
+    const levelText = document.getElementById('levelText');
+    const heartsText = document.getElementById('heartsText');
+    const startModal = document.getElementById('startModal');
+    const startGameBtn = document.getElementById('startGameBtn');
+    const gameOverModal = document.getElementById('gameOverModal');
+    const finalScore = document.getElementById('finalScore');
+    const highScoreText = document.getElementById('highScoreText');
+    const restartBtn = document.getElementById('restartBtn');
+    const wordBanner = document.getElementById('wordBanner');
+    const wordSyllables = document.getElementById('wordSyllables');
+    const typeBadge = document.getElementById('typeBadge');
+    const typeText = document.getElementById('typeText');
+
+    // Canvas Particles
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() {
+      canvas.width = gameArea.clientWidth;
+      canvas.height = gameArea.clientHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // --- TRANSLITERATION FIX & FONT AUTO-SCALING ---
+    function getRandomAksara() {
+      const keys = Object.keys(AKSARA_MAPPING);
+      const consKey = keys[Math.floor(Math.random() * keys.length)];
+      const consStem = consKey.slice(0, -1);
+      
+      const v = VOWELS[Math.floor(Math.random() * (level > 1 ? VOWELS.length : 3))];
+      const s = SUFFIXES[Math.floor(Math.random() * (level > 2 ? SUFFIXES.length : 1))];
+
+      const latin = (consStem + v.l + s.l).toUpperCase();
+      const jawa = AKSARA_MAPPING[consKey] + v.s + s.s;
+      return { latin, jawa };
+    }
+
+    function getJawaFontSize(jawaStr) {
+      const charCount = Array.from(jawaStr).length;
+      const hasPangkon = jawaStr.includes('꧀');
+      
+      if (hasPangkon || charCount >= 4) {
+        return '18px';
+      } else if (charCount === 3) {
+        return '21px';
+      } else if (charCount === 2) {
+        return '25px';
+      } else {
+        return '28px';
+      }
+    }
+
+    function spawnWave() {
+      targetField.innerHTML = '';
+      targets = [];
+
+      // Determine question type dynamically if not in the middle of a word
+      if (!currentWord) {
+        const types = ['standard', 'terbalik', 'rangkai'];
+        currentType = types[Math.floor(Math.random() * types.length)];
+        
+        if (currentType === 'rangkai') {
+          currentWord = WORDS_BANK[Math.floor(Math.random() * WORDS_BANK.length)];
+          wordProgressIdx = 0;
+        }
+      }
+
+      let correctItem;
+
+      if (currentType === 'rangkai' && currentWord) {
+        // Word Mode
+        typeBadge.textContent = 'KATA UTUH';
+        typeBadge.style.background = '#e65100';
+        typeText.textContent = `Susun: ${currentWord.latin.join('')}`;
+
+        // Render Word Banner
+        wordBanner.style.display = 'flex';
+        wordBanner.classList.remove('explode');
+
+        const sylHTML = currentWord.latin.map((syl, idx) => {
+          if (idx === wordProgressIdx) {
+            return `<span class="active-syl">${syl}</span>`;
+          }
+          return `<span>${syl}</span>`;
+        }).join(' - ');
+
+        wordSyllables.innerHTML = sylHTML;
+
+        correctItem = {
+          latin: currentWord.latin[wordProgressIdx],
+          jawa: currentWord.jawa[wordProgressIdx]
+        };
+
+        cannonPlaque.textContent = correctItem.latin;
+        cannonPlaque.className = 'plaque';
+        cannonPlaque.style.fontSize = '22px';
+
+      } else {
+        // Single Character Modes (Standard or Terbalik)
+        wordBanner.style.display = 'none';
+
+        correctItem = getRandomAksara();
+
+        if (currentType === 'terbalik') {
+          typeBadge.textContent = 'TERBALIK';
+          typeBadge.style.background = '#7b1fa2';
+          typeText.textContent = 'Aksara Jawa → Latin';
+
+          cannonPlaque.textContent = correctItem.jawa;
+          cannonPlaque.className = 'plaque jawa-plaque';
+          cannonPlaque.style.fontSize = getJawaFontSize(correctItem.jawa);
+        } else {
+          typeBadge.textContent = 'STANDARD';
+          typeBadge.style.background = '#2e7d32';
+          typeText.textContent = 'Latin → Aksara Jawa';
+
+          cannonPlaque.textContent = correctItem.latin;
+          cannonPlaque.className = 'plaque';
+          cannonPlaque.style.fontSize = '22px';
+        }
+      }
+
+      currentQuestion = correctItem;
+
+      // Generate 4 targets (1 correct, 3 wrong)
+      const options = [correctItem];
+      while (options.length < 4) {
+        const dummy = getRandomAksara();
+        if (!options.some(o => o.latin === dummy.latin)) {
+          options.push(dummy);
+        }
+      }
+
+      // Shuffle options
+      options.sort(() => Math.random() - 0.5);
+
+      const positions = [12, 36, 62, 86];
+      options.forEach((opt, idx) => {
+        const div = document.createElement('div');
+        div.className = 'target-box';
+        div.style.left = positions[idx] + '%';
+        div.style.top = '20px';
+
+        if (currentType === 'terbalik') {
+          const span = document.createElement('span');
+          span.className = 'latin-text';
+          span.textContent = opt.latin;
+          div.appendChild(span);
+        } else {
+          const span = document.createElement('span');
+          span.className = 'jawa-text';
+          span.textContent = opt.jawa;
+          span.style.fontSize = getJawaFontSize(opt.jawa);
+          div.appendChild(span);
+        }
+
+        targetField.appendChild(div);
+
+        targets.push({
+          element: div,
+          x: positions[idx],
+          y: 20,
+          data: opt,
+          isCorrect: opt.latin === correctItem.latin
+        });
+      });
+    }
+
+    // --- CONTROLS LOGIC ---
+    let isDragging = false;
+    function updateCannonPosition(clientX) {
+      const rect = sliderTrack.getBoundingClientRect();
+      let pos = ((clientX - rect.left) / rect.width) * 100;
+      pos = Math.max(5, Math.min(95, pos));
+      cannonPos = pos;
+      cannonWrap.style.left = pos + '%';
+      laserLine.style.left = pos + '%';
+      sliderThumb.style.left = pos + '%';
+      posPercent.textContent = Math.round(pos) + '%';
+    }
+
+    sliderTrack.addEventListener('pointerdown', (e) => {
+      isDragging = true;
+      updateCannonPosition(e.clientX);
+      sliderTrack.setPointerCapture(e.pointerId);
+    });
+    sliderTrack.addEventListener('pointermove', (e) => {
+      if (isDragging) updateCannonPosition(e.clientX);
+    });
+    sliderTrack.addEventListener('pointerup', () => isDragging = false);
+
+    window.addEventListener('keydown', (e) => {
+      if (isGameOver || !isGameStarted) return;
+      if (e.code === 'ArrowLeft') {
+        cannonPos = Math.max(5, cannonPos - 5);
+        updateCannonPositionByVal(cannonPos);
+      } else if (e.code === 'ArrowRight') {
+        cannonPos = Math.min(95, cannonPos + 5);
+        updateCannonPositionByVal(cannonPos);
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        shoot();
+      }
+    });
+
+    function updateCannonPositionByVal(pos) {
+      cannonWrap.style.left = pos + '%';
+      laserLine.style.left = pos + '%';
+      sliderThumb.style.left = pos + '%';
+      posPercent.textContent = Math.round(pos) + '%';
+    }
+
+    shootBtn.addEventListener('click', shoot);
+
+    function shoot() {
+      if (isGameOver || !isGameStarted) return;
+      playSound('shoot');
+
+      cannonWrap.classList.add('recoil');
+      setTimeout(() => cannonWrap.classList.remove('recoil'), 150);
+
+      const pDiv = document.createElement('div');
+      pDiv.className = 'projectile';
+      pDiv.style.left = cannonPos + '%';
+      pDiv.style.bottom = '110px';
+      gameArea.appendChild(pDiv);
+
+      projectiles.push({
+        element: pDiv,
+        x: cannonPos,
+        y: 110
+      });
+    }
+
+    // --- PARTICLES ---
+    function createExplosion(x, y, count = 25) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x, y: y,
+          vx: (Math.random() - 0.5) * 10,
+          vy: (Math.random() - 0.5) * 10,
+          radius: Math.random() * 5 + 2,
+          color: ['#ffb300', '#ff6f00', '#ffe0b2', '#ffffff', '#ffeb3b'][Math.floor(Math.random()*5)],
+          alpha: 1
+        });
+      }
+    }
+
+    // --- GAME LOOP ---
+    function update() {
+      if (isGameOver || !isGameStarted) return;
+
+      // 1. Move Projectiles
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        const p = projectiles[i];
+        p.y += 12;
+        p.element.style.bottom = p.y + 'px';
+
+        // Collision Check
+        const pRect = p.element.getBoundingClientRect();
+
+        for (let j = 0; j < targets.length; j++) {
+          const t = targets[j];
+          const tRect = t.element.getBoundingClientRect();
+
+          if (
+            pRect.left < tRect.right &&
+            pRect.right > tRect.left &&
+            pRect.top < tRect.bottom &&
+            pRect.bottom > tRect.top
+          ) {
+            // Hit!
+            createExplosion(
+              tRect.left - gameArea.getBoundingClientRect().left + tRect.width / 2,
+              tRect.top - gameArea.getBoundingClientRect().top + tRect.height / 2
+            );
+
+            if (t.isCorrect) {
+              playSound('hit');
+              score += 10;
+              scoreText.textContent = score;
+
+              if (score >= level * 50) {
+                level++;
+                levelText.textContent = level;
+              }
+
+              if (currentType === 'rangkai' && currentWord) {
+                wordProgressIdx++;
+                
+                // Check if full word completed
+                if (wordProgressIdx >= currentWord.latin.length) {
+                  playSound('fanfare');
+                  score += 20;
+                  scoreText.textContent = score;
+
+                  const bannerRect = wordBanner.getBoundingClientRect();
+                  const gameAreaRect = gameArea.getBoundingClientRect();
+                  createExplosion(
+                    bannerRect.left - gameAreaRect.left + bannerRect.width / 2,
+                    bannerRect.top - gameAreaRect.top + bannerRect.height / 2,
+                    60
+                  );
+
+                  wordBanner.classList.add('explode');
+
+                  setTimeout(() => {
+                    currentWord = null;
+                    wordProgressIdx = 0;
+                    spawnWave();
+                  }, 800);
+
+                  p.element.remove();
+                  projectiles.splice(i, 1);
+                  break;
+                }
+              }
+
+              spawnWave();
+            } else {
+              playSound('wrong');
+              lives--;
+              updateHearts();
+              score = Math.max(0, score - 5);
+              scoreText.textContent = score;
+
+              if (lives <= 0) endGame();
+            }
+
+            p.element.remove();
+            projectiles.splice(i, 1);
+            break;
+          }
+        }
+
+        if (p.y > gameArea.clientHeight) {
+          p.element.remove();
+          projectiles.splice(i, 1);
+        }
+      }
+
+      // 2. Fall Targets
+      if (!isFrozen) {
+        targets.forEach(t => {
+          t.y += 0.2 + (level * 0.05);
+          t.element.style.top = t.y + 'px';
+
+          if (t.y > gameArea.clientHeight - 160) {
+            playSound('wrong');
+            lives--;
+            updateHearts();
+            if (lives <= 0) endGame();
+            else spawnWave();
+          }
+        });
+      }
+
+      // 3. Particles
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.alpha -= 0.025;
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, pt.alpha);
+        ctx.fillStyle = pt.color;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        if (pt.alpha <= 0) particles.splice(i, 1);
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    function updateHearts() {
+      heartsText.textContent = '❤'.repeat(Math.max(0, lives)) + '♡'.repeat(Math.max(0, 3 - lives));
+    }
+
+    function endGame() {
+      isGameOver = true;
+      const hs = localStorage.getItem('bedhil_highscore') || 0;
+      if (score > hs) localStorage.setItem('bedhil_highscore', score);
+
+      finalScore.textContent = score + ' Poin';
+      highScoreText.textContent = 'Rekor Tertinggi: ' + Math.max(score, hs);
+      gameOverModal.style.display = 'flex';
+    }
+
+    // START GAME EVENT
+    startGameBtn.addEventListener('click', () => {
+      startModal.style.display = 'none';
+      isGameStarted = true;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      spawnWave();
+      requestAnimationFrame(update);
+    });
+
+    restartBtn.addEventListener('click', () => {
+      score = 0; level = 1; lives = 3; isGameOver = false; isGameStarted = true; currentWord = null;
+      scoreText.textContent = score;
+      levelText.textContent = level;
+      updateHearts();
+      gameOverModal.style.display = 'none';
+      spawnWave();
+      requestAnimationFrame(update);
+    });
+
+    // --- POWER-UPS ---
+    document.getElementById('btnPasopati').addEventListener('click', () => {
+      if (!isGameStarted || isGameOver) return;
+      let removed = 0;
+      targets.forEach(t => {
+        if (!t.isCorrect && removed < 2) {
+          t.element.style.visibility = 'hidden';
+          removed++;
+        }
+      });
+    });
+
+    document.getElementById('btnGundala').addEventListener('click', () => {
+      if (!isGameStarted || isGameOver) return;
+      isFrozen = true;
+      setTimeout(() => isFrozen = false, 4000);
+    });
+
+    document.getElementById('btnBanyu').addEventListener('click', () => {
+      if (!isGameStarted || isGameOver) return;
+      if (lives < 3) {
+        lives++;
+        updateHearts();
+      }
+    });
+
+    // INIT SPAWN FOR PREVIEW BEHIND MODAL
+    spawnWave();
+  </script>
+</body>
+</html>
