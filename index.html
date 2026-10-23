@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bedhil Aksara Jawa - Deluxe Edition</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Noto Sans Javanese & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese:wght@500;700&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            jawa: ['"Noto Sans Javanese"', 'serif'],
+          },
+          colors: {
+            terracotta: {
+              DEFAULT: '#3e2723',
+              dark: '#271c19',
+              light: '#5d4037',
+            },
+            jawaGold: {
+              DEFAULT: '#ffb300',
+              light: '#ffecb3',
+              dark: '#ff6f00',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #271c19;
+      color: #3e2723;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow-x: hidden;
+    }
+    
+    .bg-batik {
+      background-image: 
+        radial-gradient(1200px 600px at 20% -10%, #fff7e6 0%, transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, #ffe0b2 0%, transparent 50%),
+        linear-gradient(180deg, #fdf6e3 0%, #efebe9 55%, #d7ccc8 100%);
+    }
+
+    .batik-overlay {
+      position: absolute; inset: 0; opacity: 0.06;
+      background-image: 
+        repeating-linear-gradient(45deg, #5d4037 0 1px, transparent 1px 14px),
+        repeating-linear-gradient(-45deg, #8d6e63 0 1px, transparent 1px 20px);
+      pointer-events: none;
+    }
+
+    .target-box {
+      box-shadow: 0 6px 0 #3e2723, 0 10px 20px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .target-box.frozen {
+      border-color: #0288d1 !important;
+      background: linear-gradient(180deg, #e0f7fa 0%, #80deea 100%) !important;
+      box-shadow: 0 0 15px #00bcd4, 0 6px 0 #006064 !important;
+    }
+
+    .cannon-recoil {
+      animation: recoilAnim 0.18s ease-out;
+    }
+
+    @keyframes recoilAnim {
+      0% { transform: translateX(-50%) translateY(0) scale(1); }
+      40% { transform: translateX(-50%) translateY(8px) scale(0.97); }
+      100% { transform: translateX(-50%) translateY(0) scale(1); }
+    }
+
+    .shake {
+      animation: shakeAnim 0.35s ease-in-out;
+    }
+
+    @keyframes shakeAnim {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    .float-slow {
+      animation: floatAnim 3s ease-in-out infinite;
+    }
+
+    @keyframes floatAnim {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #efebe9; }
+    ::-webkit-scrollbar-thumb { background: #8d6e63; border-radius: 4px; }
+  </style>
+</head>
+<body class="min-h-screen bg-batik flex flex-col items-center">
+
+  <div class="batik-overlay"></div>
+
+  <!-- Main Container -->
+  <div class="w-full max-w-5xl flex flex-col min-h-screen relative z-10 px-2 sm:px-4 py-3">
+
+    <!-- Header / Stats Bar -->
+    <header class="w-full bg-[#3e2723] text-[#ffecb3] rounded-2xl p-3 sm:p-4 mb-3 shadow-xl border-2 border-[#5d4037] flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-[#ffb300] text-[#3e2723] rounded-xl flex items-center justify-center font-extrabold text-xl shadow-md border-2 border-[#fff8e1]">
+          🎯
+        </div>
+        <div>
+          <h1 class="font-black text-sm sm:text-base tracking-wider leading-none text-[#fff8e1]">BEDHIL AKSARA JAWA</h1>
+          <p class="font-jawa text-xs sm:text-sm text-[#ffcc80] mt-1">ꦧꦼꦝꦶꦭ꧀ꦲꦏ꧀ꦱꦫꦗꦮ</p>
+        </div>
+      </div>
+
+      <!-- Stats Pill -->
+      <div class="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold">
+        <div class="bg-[#4e342e] border border-[#6d4c41] px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[#ffe0b2]">
+          <span>⭐ Skor:</span>
+          <span id="scoreText" class="text-[#ffb300] font-extrabold text-base">0</span>
+        </div>
+
+        <div class="bg-[#4e342e] border border-[#6d4c41] px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[#ffe0b2]">
+          <span>🏆 Rekor:</span>
+          <span id="highScoreText" class="text-[#fff8e1] font-bold">0</span>
+        </div>
+
+        <div class="bg-[#4e342e] border border-[#6d4c41] px-3 py-1.5 rounded-full flex items-center gap-1 text-red-400 font-mono tracking-widest text-base">
+          <span id="heartsText">❤❤❤</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Game Shell -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1">
+
+      <!-- Left Game Area (3 Cols) -->
+      <div class="lg:col-span-3 flex flex-col gap-3">
+
+        <!-- Canvas & Game Battlefield Area -->
+        <div id="gameWindow" class="relative w-full h-[520px] sm:h-[560px] bg-gradient-to-b from-[#fff8e1] via-[#ffe0b2] to-[#d7a76f] rounded-2xl border-4 border-[#3e2723] shadow-2xl overflow-hidden flex flex-col justify-between">
+          
+          <!-- Particle FX Canvas Overlay -->
+          <canvas id="fxCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
+
+          <!-- Status Bar Top (Boss/Powerup Notification) -->
+          <div class="absolute top-3 left-3 right-3 z-10 flex justify-between items-start pointer-events-none">
+            <!-- Active Mode Badge -->
+            <div id="modeBadge" class="bg-[#3e2723]/90 text-[#ffecb3] border border-[#ffb300] px-3 py-1 rounded-full text-xs font-bold shadow-md">
+              Mode: Standard
+            </div>
+
+            <!-- Active Powerup / Freeze Timer Badge -->
+            <div id="powerupBadge" class="hidden bg-[#0288d1] text-white border border-[#80deea] px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse">
+              ⚡ GUNDALA (Beku): <span id="freezeTimer">5</span>s
+            </div>
+          </div>
+
+          <!-- Target & Field Area -->
+          <div id="fieldArea" class="relative w-full flex-1 overflow-hidden">
+
+            <!-- Boss Bar Container (Hidden by default) -->
+            <div id="bossContainer" class="hidden absolute top-10 left-1/2 -translate-x-1/2 w-11/12 max-w-md bg-[#3e2723]/95 text-[#fff8e1] border-2 border-red-600 rounded-2xl p-3 shadow-2xl z-30 flex flex-col items-center gap-2">
+              <div class="flex justify-between w-full text-xs font-bold px-1">
+                <span class="text-red-400 font-extrabold flex items-center gap-1">👹 BOS DENAWA</span>
+                <span id="bossHpText" class="text-[#ffb300]">100/100 HP</span>
+              </div>
+              <div class="w-full h-3 bg-[#271c19] rounded-full overflow-hidden border border-[#5d4037]">
+                <div id="bossHpBar" class="h-full bg-gradient-to-r from-red-600 to-yellow-500 w-full transition-all duration-300"></div>
+              </div>
+              <div class="text-xs text-[#ffe0b2] font-semibold text-center">
+                Tembak Tameng Aksara: <span id="bossTargetChar" class="font-jawa text-xl font-bold text-[#ffb300] bg-[#4e342e] px-2 py-0.5 rounded border border-[#ffb300]">ꦏ</span>
+              </div>
+            </div>
+
+            <!-- Rangkai Kata Clue Bar (Hidden by default) -->
+            <div id="wordClueContainer" class="hidden absolute top-10 left-1/2 -translate-x-1/2 bg-[#3e2723] text-[#fff8e1] border-2 border-[#ffb300] rounded-xl px-4 py-2 shadow-xl z-20 flex items-center gap-3">
+              <span class="text-xs font-bold text-[#ffb300]">RANGKAI KATA:</span>
+              <span id="wordTargetText" class="font-extrabold text-base tracking-widest text-[#fff8e1]">M-A-J-A-P-A-H-I-T</span>
+              <span id="wordProgressText" class="bg-[#5d4037] text-xs px-2 py-0.5 rounded text-[#ffe0b2] font-mono">1/4</span>
+            </div>
+
+            <!-- Floating Target Cards Container -->
+            <div id="targetContainer" class="absolute inset-0"></div>
+
+            <!-- Floating Powerup Items Container -->
+            <div id="powerupContainer" class="absolute inset-0 pointer-events-none"></div>
+
+            <!-- Projectiles Container -->
+            <div id="projectileContainer" class="absolute inset-0 pointer-events-none z-10"></div>
+          </div>
+
+          <!-- Rail Line & Cetbang Cannon Area -->
+          <div class="relative w-full h-36 bg-gradient-to-t from-[#271c19] via-[#3e2723] to-transparent flex flex-col justify-end items-center pb-2 z-10">
+
+            <!-- Rail Bar -->
+            <div class="absolute bottom-6 left-4 right-4 h-5 bg-gradient-to-b from-[#8d6e63] via-[#5d4037] to-[#271c19] border-2 border-[#1c110f] rounded-lg shadow-inner flex items-center justify-between px-2">
+              <div class="w-1 h-3 bg-[#1c110f] rounded"></div>
+              <div class="w-1 h-3 bg-[#1c110f] rounded"></div>
+              <div class="w-1 h-3 bg-[#1c110f] rounded"></div>
+              <div class="w-1 h-3 bg-[#1c110f] rounded"></div>
+              <div class="w-1 h-3 bg-[#1c110f] rounded"></div>
+            </div>
+
+            <!-- Cannon Laser Aim Indicator -->
+            <div id="aimLaser" class="absolute bottom-12 w-0.5 bg-dashed border-l border-dashed border-[#ffeb3b] shadow-[0_0_8px_#ffeb3b] z-0 pointer-events-none transition-all duration-75" style="height: 380px; left: 50%;"></div>
+
+            <!-- Cannon Assembly -->
+            <div id="cannonWrap" class="absolute bottom-5 w-44 h-28 -translate-x-1/2 flex flex-col items-center justify-end z-10 pointer-events-none transition-all duration-75" style="left: 50%;">
+              
+              <!-- Muzzle Flash -->
+              <div id="muzzleFlash" class="opacity-0 w-10 h-6 bg-gradient-to-t from-orange-500 via-yellow-300 to-white rounded-full blur-xs transition-opacity duration-100 mb-[-10px]"></div>
+
+              <!-- Cannon Barrel -->
+              <div class="w-12 h-7 bg-gradient-to-r from-[#1a1a1a] via-[#4e342e] to-[#1a1a1a] border-2 border-[#1c110f] rounded-t-lg shadow-lg relative flex justify-center items-center">
+                <div class="w-8 h-2 bg-[#271c19] rounded-t"></div>
+              </div>
+
+              <!-- Cannon Main Body with Plaque -->
+              <div class="w-40 h-16 bg-gradient-to-b from-[#6d4c41] via-[#4e342e] to-[#271c19] border-3 border-[#1c110f] rounded-2xl shadow-xl flex items-center justify-center relative border-2 border-[#1c110f]">
+                
+                <!-- Brass Plaque showing current question -->
+                <div class="bg-[#fffdf5] border-2 border-[#1c110f] rounded-xl px-3 py-1 shadow-md text-center rotate-[-1deg]">
+                  <span id="cannonCharText" class="font-extrabold text-2xl text-[#1a1a1a] tracking-wider">KANG</span>
+                </div>
+              </div>
+
+              <!-- Wheels -->
+              <div class="flex justify-between w-32 -mt-3 z-20">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#8d6e63] to-[#271c19] border-2 border-[#1c110f] flex items-center justify-center shadow-md">
+                  <div class="w-2.5 h-2.5 bg-[#ffecb3] rounded-full border border-black"></div>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#8d6e63] to-[#271c19] border-2 border-[#1c110f] flex items-center justify-center shadow-md">
+                  <div class="w-2.5 h-2.5 bg-[#ffecb3] rounded-full border border-black"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Touch Controls Bar -->
+        <div class="bg-[#fff8e1] border-3 border-[#3e2723] rounded-2xl p-3 shadow-lg flex flex-col sm:flex-row items-center gap-3">
+          
+          <!-- Slider Position Control -->
+          <div class="w-full sm:flex-1 flex flex-col gap-1">
+            <div class="flex justify-between text-xs font-bold text-[#5d4037]">
+              <span>↔ GESER MERIAM (Atau Pakai Panah Kiri/Kanan)</span>
+              <span id="posPercentText">50%</span>
+            </div>
+            <input type="range" id="cannonSlider" min="8" max="92" value="50" class="w-full h-8 bg-[#d7ccc8] rounded-lg appearance-none cursor-pointer accent-[#ff6f00]">
+          </div>
+
+          <!-- Big Shoot Button -->
+          <button id="shootBtn" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-b from-[#ff6f00] to-[#e65100] text-[#fff8e1] font-black text-base rounded-xl border-2 border-[#1c110f] shadow-[0_5px_0_#1c110f] active:translate-y-1 active:shadow-[0_2px_0_#1c110f] flex items-center justify-center gap-2 transition-all">
+            <span>💥 TEMBAK!</span>
+            <span class="text-xs font-normal opacity-80">(Spacebar)</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Sidebar (Controls & Mode Options) (1 Col) -->
+      <div class="flex flex-col gap-3">
+
+        <!-- Mode Selector Card -->
+        <div class="bg-[#fffdf5] border-2 border-[#5d4037] rounded-2xl p-3.5 shadow-md">
+          <h2 class="font-bold text-xs uppercase tracking-wider text-[#5d4037] mb-2 flex items-center gap-1.5">
+            <span>🎮</span> PILIH MODE MAIN
+          </h2>
+          <div class="flex flex-col gap-1.5 text-xs font-bold">
+            <button id="btnModeStandard" class="w-full text-left px-3 py-2 rounded-xl border border-[#bcaaa4] bg-[#3e2723] text-[#ffecb3] shadow-sm transition-all">
+              1. Standard (Latin → Jawa)
+            </button>
+            <button id="btnModeReverse" class="w-full text-left px-3 py-2 rounded-xl border border-[#bcaaa4] bg-[#efebe9] text-[#5d4037] hover:bg-[#d7ccc8] transition-all">
+              2. Terbalik (Jawa → Latin)
+            </button>
+            <button id="btnModeWords" class="w-full text-left px-3 py-2 rounded-xl border border-[#bcaaa4] bg-[#efebe9] text-[#5d4037] hover:bg-[#d7ccc8] transition-all">
+              3. Rangkai Kata Utuh
+            </button>
+          </div>
+        </div>
+
+        <!-- Level Selector Card -->
+        <div class="bg-[#fffdf5] border-2 border-[#5d4037] rounded-2xl p-3.5 shadow-md">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="font-bold text-xs uppercase tracking-wider text-[#5d4037] flex items-center gap-1.5">
+              <span>📶</span> TINGKAT KESULITAN
+            </h2>
+            <button id="btnChangeQuestion" class="text-[10px] font-bold bg-[#efebe9] text-[#5d4037] px-2 py-1 rounded-lg border border-[#bcaaa4] hover:bg-[#d7ccc8]">
+              🔄 Acak Soal
+            </button>
+          </div>
+
+          <div class="grid grid-cols-4 gap-1.5 font-extrabold text-xs">
+            <button id="lvlBtn1" class="py-2 rounded-xl border border-[#5d4037] bg-[#ffb300] text-[#3e2723]">Lv 1</button>
+            <button id="lvlBtn2" class="py-2 rounded-xl border border-[#5d4037] bg-[#efebe9] text-[#5d4037]">Lv 2</button>
+            <button id="lvlBtn3" class="py-2 rounded-xl border border-[#5d4037] bg-[#efebe9] text-[#5d4037]">Lv 3</button>
+            <button id="lvlBtn4" class="py-2 rounded-xl border border-[#5d4037] bg-[#efebe9] text-[#5d4037]">Lv 4</button>
+          </div>
+
+          <p id="lvlDescText" class="text-[11px] text-[#5d4037] mt-2 leading-tight">
+            Level 1: Vokal Dasar (A, I, U) tanpa sandhangan panyigeg.
+          </p>
+        </div>
+
+        <!-- Power-Ups Info Card -->
+        <div class="bg-[#fffdf5] border-2 border-[#5d4037] rounded-2xl p-3.5 shadow-md">
+          <h2 class="font-bold text-xs uppercase tracking-wider text-[#5d4037] mb-2 flex items-center gap-1.5">
+            <span>✨</span> PUSAKA CETBANG
+          </h2>
+          <div class="space-y-1.5 text-[11px] text-[#5d4037]">
+            <div class="flex items-center gap-2 bg-[#fff3e0] p-1.5 rounded-lg border border-[#ffe0b2]">
+              <span class="text-base">🏹</span>
+              <div><b>Pasopati:</b> Hapus 2 opsi salah / Doang serangan Bos</div>
+            </div>
+            <div class="flex items-center gap-2 bg-[#e0f7fa] p-1.5 rounded-lg border border-[#b2ebf2]">
+              <span class="text-base">⚡</span>
+              <div><b>Gundala:</b> Membekukan gerak kotak target 5 detik</div>
+            </div>
+            <div class="flex items-center gap-2 bg-[#e8f5e9] p-1.5 rounded-lg border border-[#c8e6c9]">
+              <span class="text-base">💧</span>
+              <div><b>Banyu Mili:</b> Pulihkan +1 Nyawa</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kamus Paugeran Modal Button -->
+        <button id="btnOpenPaugeran" class="w-full py-2.5 bg-[#3e2723] text-[#ffecb3] font-bold text-xs rounded-xl border border-[#1c110f] shadow-md hover:bg-[#4e342e] transition-all flex items-center justify-center gap-2">
+          <span>📜</span> KAMUS PAUGERAN AKSARA
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Paugeran Dictionary Modal -->
+  <div id="paugeranModal" class="hidden fixed inset-0 bg-[#3e2723]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-[#fffdf5] border-4 border-[#ffb300] rounded-3xl p-5 max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl relative">
+      
+      <div class="flex justify-between items-center mb-4 border-b border-[#d7ccc8] pb-2">
+        <h2 class="font-extrabold text-lg text-[#3e2723] flex items-center gap-2">
+          📜 PAUGERAN AKSARA JAWA
+        </h2>
+        <button id="btnClosePaugeran" class="w-8 h-8 rounded-full bg-[#efebe9] text-[#5d4037] font-bold text-sm flex items-center justify-center border border-[#bcaaa4] hover:bg-[#d7ccc8]">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs text-[#3e2723]">
+        <div>
+          <h3 class="font-extrabold text-sm text-[#ff6f00] mb-1">1. Sandhangan Swara (Vokal)</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2]"><b>Wulu (ꦶ)</b> = Vocal I (Ki = ꦏꦶ)</div>
+            <div class="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2]"><b>Suku (ꦸ)</b> = Vocal U (Ku = ꦏꦸ)</div>
+            <div class="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2]"><b>Pepet (ꦼ)</b> = Vocal Ê (Kê = ꦏꦼ)</div>
+            <div class="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2]"><b>Taling (ꦺ)</b> = Vocal É (Ké = ꦏꦺ)</div>
+            <div class="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2] col-span-2"><b>Taling-Tarung (ꦺꦴ)</b> = Vocal O (Ko = ꦏꦺꦴ)</div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-extrabold text-sm text-[#ff6f00] mb-1">2. Sandhangan Panyigeg (Mati)</h3>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-[#efebe9] p-2 rounded-lg border border-[#d7ccc8]"><b>Cecak (ꦁ)</b> = -NG</div>
+            <div class="bg-[#efebe9] p-2 rounded-lg border border-[#d7ccc8]"><b>Layar (ꦂ)</b> = -R</div>
+            <div class="bg-[#efebe9] p-2 rounded-lg border border-[#d7ccc8]"><b>Wignyan (ꦃ)</b> = -H</div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-extrabold text-sm text-[#ff6f00] mb-1">3. Aksara Khusus</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-[#fffecb] p-2 rounded-lg border border-[#fff59d]"><b>Pa Cerek (ꦉ)</b> = RÊ (Bukan Ra+pepet)</div>
+            <div class="bg-[#fffecb] p-2 rounded-lg border border-[#fff59d]"><b>Nga Lelet (ꦊ)</b> = LÊ (Bukan La+pepet)</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Game Over / Victory Modal -->
+  <div id="gameOverModal" class="hidden fixed inset-0 bg-[#3e2723]/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-[#fffdf5] border-4 border-[#ffb300] rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl relative">
+      <div class="font-jawa text-3xl text-[#3e2723] mb-1">ꦒꦩꦺꦎꦮ꦳ꦼꦂ</div>
+      <h2 id="gameOverTitle" class="font-black text-2xl text-[#3e2723] mb-2">GAME OVER!</h2>
+      
+      <div class="bg-[#fff3e0] rounded-2xl p-4 my-4 border border-[#ffe0b2]">
+        <div class="text-xs font-bold text-[#8d6e63]">SKOR AKHIR</div>
+        <div id="finalScoreText" class="text-4xl font-extrabold text-[#ff6f00]">0</div>
+      </div>
+
+      <button id="btnRestart" class="w-full py-3 bg-[#3e2723] text-[#ffecb3] font-black text-base rounded-2xl border-2 border-[#1c110f] shadow-lg hover:bg-[#4e342e] transition-all">
+        🔄 MAIN LAGI
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // ==========================================
+    // DATA DICTIONARY & GAME STATE
+    // ==========================================
+    const CONSONANTS = {
+      h:"ꦲ", n:"ꦤ", c:"ꦕ", r:"ꦫ", k:"ꦏ",
+      d:"ꦢ", t:"ꦠ", s:"ꦱ", w:"ꦮ", l:"ꦭ",
+      p:"ꦥ", dh:"ꦝ", j:"ꦗ", y:"ꦪ", m:"ꦩ",
+      g:"ꦒ", b:"ꦧ", th:"ꦛ", ng:"ꦔ", ny:"ꦚ"
+    };
+
+    const SPECIAL_CONS = { "rê":"ꦉ", "lê":"ꦊ" };
+
+    const VOWELS = {
+      a: "", i: "ꦶ", u: "ꦸ", "ê": "ꦼ", "é": "ꦺ", "o": "ꦺꦴ"
+    };
+
+    const SUFFIXES = {
+      "": "", ng: "ꦁ", r: "ꦂ", h: "ꦃ"
+    };
+
+    const WORD_DATABASE = [
+      { word: "MAJAPAHIT", syllables: ["MA", "JA", "PA", "HIT"], jawaSyllables: ["ꦩ", "ꦗ", "ꦥ", "ꦲꦶꦠ꧀"] },
+      { word: "BATIK", syllables: ["BA", "TIK"], jawaSyllables: ["ꦧ", "ꦠꦶꦏ꧀"] },
+      { word: "SURABAYA", syllables: ["SU", "RA", "BA", "YA"], jawaSyllables: ["ꦱꦸ", "ꦫ", "ꦧ", "ꦪ"] },
+      { word: "GATOTKACA", syllables: ["GA", "TOT", "KA", "CA"], jawaSyllables: ["ꦒ", "ꦠꦺꦴꦠ꧀", "ꦏ", "ꦕ"] },
+      { word: "NUSANTARA", syllables: ["NU", "SAN", "TA", "RA"], jawaSyllables: ["ꦤꦸ", "ꦱꦤ꧀", "ꦠ", "ꦫ"] },
+      { word: "SEMARANG", syllables: ["SE", "MA", "RANG"], jawaSyllables: ["ꦱꦼ", "ꦩ", "ꦫꦁ"] }
+    ];
+
+    let gameState = {
+      score: 0,
+      highScore: parseInt(localStorage.getItem('bedhil_highscore') || '0'),
+      lives: 3,
+      level: 1,
+      mode: 'standard', // 'standard', 'reverse', 'words'
+      cannonPos: 50, // 0 - 100%
+      freezeTimer: 0,
+      
+      // Questions & Targets
+      currentQuestion: null,
+      targets: [],
+      projectiles: [],
+      powerups: [],
+      
+      // Word mode
+      wordIndex: 0,
+      currentWordObj: null,
+
+      // Boss State
+      bossActive: false,
+      bossHp: 100,
+      bossMaxHp: 100,
+      bossTargetChar: '',
+
+      isGameOver: false
+    };
+
+    // ==========================================
+    // AUDIO SYNTHESIZER (Web Audio API)
+    // ==========================================
+    const AudioSynth = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      },
+      playShoot() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.15);
+      },
+      playHitCorrect() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+          gain.gain.setValueAtTime(0.2, now + idx * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.3);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.05);
+          osc.stop(now + idx * 0.05 + 0.3);
+        });
+      },
+      playHitWrong() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(80, this.ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.25);
+      },
+      playPowerup() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.3);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      }
+    };
+
+    // ==========================================
+    // CANVAS PARTICLE SYSTEM
+    // ==========================================
+    const canvas = document.getElementById('fxCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function createExplosion(x, y, color = '#ffb300') {
+      for (let i = 0; i < 20; i++) {
+        particles.push({
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 8,
+          vy: (Math.random() - 0.5) * 8,
+          radius: Math.random() * 4 + 2,
+          color: color,
+          alpha: 1,
+          decay: Math.random() * 0.03 + 0.02
+        });
+      }
+    }
+
+    function updateAndDrawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.decay;
+
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // ==========================================
+    // QUESTION GENERATOR LOGIC
+    // ==========================================
+    function generateQuestion(level) {
+      let allowedCons = Object.keys(CONSONANTS);
+      let allowedVowels = ['a', 'i', 'u'];
+      let allowedSuffixes = [''];
+
+      if (level >= 2) allowedVowels = ['a', 'i', 'u', 'ê', 'é', 'o'];
+      if (level >= 3) allowedSuffixes = ['', 'ng', 'r', 'h'];
+      if (level >= 4) allowedCons = [...allowedCons, 'rê', 'lê'];
+
+      const cons = allowedCons[Math.floor(Math.random() * allowedCons.length)];
+      const vowel = allowedVowels[Math.floor(Math.random() * allowedVowels.length)];
+      const suffix = allowedSuffixes[Math.floor(Math.random() * allowedSuffixes.length)];
+
+      let jawa = (SPECIAL_CONS[cons] || CONSONANTS[cons] || 'ꦏ') + (VOWELS[vowels] || VOWELS[vowel] || '') + (SUFFIXES[suffix] || '');
+      let latin = cons.toUpperCase() + (vowel === 'a' ? '' : vowel.toUpperCase()) + suffix.toUpperCase();
+
+      return { cons, vowel, suffix, jawa, latin };
+    }
+
+    function createTargetDeck(correctQ) {
+      const deck = [{ ...correctQ, isCorrect: true }];
+      let attempts = 0;
+
+      while (deck.length < 4 && attempts < 50) {
+        attempts++;
+        const dummy = generateQuestion(gameState.level);
+        if (dummy.jawa !== correctQ.jawa && !deck.some(d => d.jawa === dummy.jawa)) {
+          deck.push({ ...dummy, isCorrect: false });
+        }
+      }
+
+      // Shuffle & set positions
+      deck.sort(() => Math.random() - 0.5);
+      const positions = [15, 38, 62, 85];
+
+      return deck.map((item, idx) => ({
+        id: Math.random().toString(36).substring(2, 7),
+        ...item,
+        x: positions[idx],
+        y: 10 + Math.random() * 5,
+        speed: 0.15 + Math.random() * 0.1
+      }));
+    }
+
+    // ==========================================
+    // GAME ENGINE & RENDER LOOP
+    // ==========================================
+    function initGame() {
+      gameState.score = 0;
+      gameState.lives = 3;
+      gameState.isGameOver = false;
+      gameState.bossActive = false;
+      gameState.freezeTimer = 0;
+      gameState.projectiles = [];
+      gameState.powerups = [];
+      
+      updateUI();
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      if (gameState.isGameOver) return;
+
+      // Check Boss Trigger every 80 points
+      if (gameState.score > 0 && gameState.score % 80 === 0 && !gameState.bossActive) {
+        startBossStage();
+        return;
+      }
+
+      if (gameState.mode === 'words') {
+        if (!gameState.currentWordObj || gameState.wordIndex >= gameState.currentWordObj.syllables.length) {
+          gameState.currentWordObj = WORD_DATABASE[Math.floor(Math.random() * WORD_DATABASE.length)];
+          gameState.wordIndex = 0;
+        }
+        
+        const currentSyl = gameState.currentWordObj.syllables[gameState.wordIndex];
+        const currentJawaSyl = gameState.currentWordObj.jawaSyllables[gameState.wordIndex];
+        
+        gameState.currentQuestion = { latin: currentSyl, jawa: currentJawaSyl };
+      } else {
+        gameState.currentQuestion = generateQuestion(gameState.level);
+      }
+
+      gameState.targets = createTargetDeck(gameState.currentQuestion);
+      updateCannonText();
+    }
+
+    function startBossStage() {
+      gameState.bossActive = true;
+      gameState.bossHp = 100;
+      gameState.bossMaxHp = 100;
+      
+      const q = generateQuestion(gameState.level);
+      gameState.bossTargetChar = q.jawa;
+      gameState.currentQuestion = q;
+      
+      document.getElementById('bossContainer').classList.remove('hidden');
+      updateCannonText();
+    }
+
+    function updateCannonText() {
+      const textElem = document.getElementById('cannonCharText');
+      if (gameState.mode === 'reverse') {
+        textElem.innerText = gameState.currentQuestion.jawa;
+        textElem.className = "font-jawa font-bold text-3xl text-[#1a1a1a]";
+      } else {
+        textElem.innerText = gameState.currentQuestion.latin;
+        textElem.className = "font-extrabold text-2xl text-[#1a1a1a] tracking-wider";
+      }
+    }
+
+    // ==========================================
+    // USER ACTIONS & SHOOTING
+    // ==========================================
+    function shootCannon() {
+      if (gameState.isGameOver) return;
+      AudioSynth.init();
+      AudioSynth.playShoot();
+
+      // Recoil Effect
+      const cannonWrap = document.getElementById('cannonWrap');
+      const muzzleFlash = document.getElementById('muzzleFlash');
+      cannonWrap.classList.add('cannon-recoil');
+      muzzleFlash.classList.remove('opacity-0');
+
+      setTimeout(() => {
+        cannonWrap.classList.remove('cannon-recoil');
+        muzzleFlash.classList.add('opacity-0');
+      }, 150);
+
+      // Spawn Projectile
+      gameState.projectiles.push({
+        id: Math.random().toString(36).substring(2, 7),
+        x: gameState.cannonPos,
+        y: 18, // Percent from bottom
+        speed: 2.2
+      });
+    }
+
+    function triggerPowerup(type) {
+      AudioSynth.playPowerup();
+      if (type === 'pasopati') {
+        // Destroy 2 wrong targets
+        let removed = 0;
+        gameState.targets.forEach(t => {
+          if (!t.isCorrect && removed < 2) {
+            createExplosion(t.x * canvas.width / 100, t.y * canvas.height / 100, '#00bcd4');
+            t.destroyed = true;
+            removed++;
+          }
+        });
+        gameState.targets = gameState.targets.filter(t => !t.destroyed);
+      } else if (type === 'gundala') {
+        gameState.freezeTimer = 5;
+        document.getElementById('powerupBadge').classList.remove('hidden');
+      } else if (type === 'banyuMili') {
+        gameState.lives = Math.min(3, gameState.lives + 1);
+        updateUI();
+      }
+    }
+
+    // ==========================================
+    // GAME PHYSICS & TICK
+    // ==========================================
+    function gameLoop() {
+      if (!gameState.isGameOver) {
+        
+        // Update Freeze Timer
+        if (gameState.freezeTimer > 0) {
+          gameState.freezeTimer -= 0.016;
+          document.getElementById('freezeTimer').innerText = Math.ceil(gameState.freezeTimer);
+          if (gameState.freezeTimer <= 0) {
+            document.getElementById('powerupBadge').classList.add('hidden');
+          }
+        }
+
+        // Update Floating Targets Movement
+        if (gameState.freezeTimer <= 0) {
+          gameState.targets.forEach(t => {
+            t.y += t.speed;
+            // Respawn if reaches bottom
+            if (t.y > 72) {
+              t.y = 8;
+            }
+          });
+        }
+
+        // Random Powerup Spawner (3% chance per tick if empty)
+        if (gameState.powerups.length === 0 && Math.random() < 0.002) {
+          const types = ['pasopati', 'gundala', 'banyuMili'];
+          gameState.powerups.push({
+            type: types[Math.floor(Math.random() * types.length)],
+            x: 10 + Math.random() * 80,
+            y: 10,
+            speed: 0.2
+          });
+        }
+
+        // Move Powerup Items
+        gameState.powerups.forEach(p => p.y += p.speed);
+
+        // Update Projectiles & Collision Detection
+        for (let i = gameState.projectiles.length - 1; i >= 0; i--) {
+          const p = gameState.projectiles[i];
+          p.y += p.speed;
+
+          const projPxX = p.x * canvas.width / 100;
+          const projPxY = canvas.height - (p.y * canvas.height / 100);
+
+          // Check Collision with Powerup
+          for (let j = gameState.powerups.length - 1; j >= 0; j--) {
+            const item = gameState.powerups[j];
+            const itemPxX = item.x * canvas.width / 100;
+            const itemPxY = item.y * canvas.height / 100;
+
+            if (Math.hypot(projPxX - itemPxX, projPxY - itemPxY) < 30) {
+              triggerPowerup(item.type);
+              createExplosion(itemPxX, itemPxY, '#00e676');
+              gameState.powerups.splice(j, 1);
+              gameState.projectiles.splice(i, 1);
+              break;
+            }
+          }
+
+          // Check Collision with Boss Stage
+          if (gameState.bossActive) {
+            if (p.y > 65) {
+              createExplosion(projPxX, projPxY, '#ff1744');
+              gameState.bossHp -= 25;
+              document.getElementById('bossHpBar').style.width = `${gameState.bossHp}%`;
+              document.getElementById('bossHpText').innerText = `${gameState.bossHp}/100 HP`;
+
+              AudioSynth.playHitCorrect();
+              gameState.projectiles.splice(i, 1);
+
+              if (gameState.bossHp <= 0) {
+                gameState.bossActive = false;
+                document.getElementById('bossContainer').classList.add('hidden');
+                gameState.score += 50;
+                updateUI();
+                nextQuestion();
+              }
+              continue;
+            }
+          }
+
+          // Check Collision with Targets
+          for (let j = gameState.targets.length - 1; j >= 0; j--) {
+            const t = gameState.targets[j];
+            const targetPxX = t.x * canvas.width / 100;
+            const targetPxY = t.y * canvas.height / 100;
+
+            if (Math.hypot(projPxX - targetPxX, projPxY - targetPxY) < 36) {
+              
+              // HIT!
+              createExplosion(targetPxX, targetPxY, t.isCorrect ? '#ffb300' : '#f44336');
+              gameState.projectiles.splice(i, 1);
+
+              if (t.isCorrect) {
+                // Correct Target Hit!
+                AudioSynth.playHitCorrect();
+                gameState.score += 10;
+                
+                if (gameState.mode === 'words') {
+                  gameState.wordIndex++;
+                }
+
+                updateUI();
+                nextQuestion();
+              } else {
+                // Wrong Target Hit!
+                AudioSynth.playHitWrong();
+                gameState.lives--;
+                document.getElementById('gameWindow').classList.add('shake');
+                setTimeout(() => document.getElementById('gameWindow').classList.remove('shake'), 350);
+
+                updateUI();
+
+                if (gameState.lives <= 0) {
+                  endGame();
+                }
+              }
+              break;
+            }
+          }
+
+          // Remove offscreen projectiles
+          if (p.y > 90) {
+            gameState.projectiles.splice(i, 1);
+          }
+        }
+      }
+
+      renderTargetsDOM();
+      updateAndDrawParticles();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Render Target elements into DOM for perfect CSS styling
+    function renderTargetsDOM() {
+      const container = document.getElementById('targetContainer');
+      const powerupContainer = document.getElementById('powerupContainer');
+      const projContainer = document.getElementById('projectileContainer');
+
+      container.innerHTML = '';
+      powerupContainer.innerHTML = '';
+      projContainer.innerHTML = '';
+
+      // Render Floating Targets
+      gameState.targets.forEach(t => {
+        const div = document.createElement('div');
+        div.className = `target-box absolute -translate-x-1/2 w-16 h-18 sm:w-20 sm:h-22 bg-gradient-to-b from-[#fff3e0] to-[#ffcc80] border-3 border-[#5d4037] rounded-2xl flex items-center justify-center font-jawa text-2xl sm:text-3xl text-[#3e2723] ${gameState.freezeTimer > 0 ? 'frozen' : 'float-slow'}`;
+        div.style.left = `${t.x}%`;
+        div.style.top = `${t.y}%`;
+        
+        // Show text depending on mode
+        div.innerText = gameState.mode === 'reverse' ? t.latin : t.jawa;
+        container.appendChild(div);
+      });
+
+      // Render Floating Powerups
+      gameState.powerups.forEach(p => {
+        const div = document.createElement('div');
+        const icons = { pasopati: '🏹', gundala: '⚡', banyuMili: '💧' };
+        div.className = "absolute -translate-x-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#ffb300] shadow-lg flex items-center justify-center text-lg animate-bounce";
+        div.style.left = `${p.x}%`;
+        div.style.top = `${p.y}%`;
+        div.innerText = icons[p.type];
+        powerupContainer.appendChild(div);
+      });
+
+      // Render Cannon Projectiles
+      gameState.projectiles.forEach(p => {
+        const div = document.createElement('div');
+        div.className = "absolute -translate-x-1/2 w-6 h-6 rounded-full bg-gradient-to-r from-yellow-300 to-orange-500 border border-black shadow-[0_0_12px_#ff9800]";
+        div.style.left = `${p.x}%`;
+        div.style.bottom = `${p.y}%`;
+        projContainer.appendChild(div);
+      });
+    }
+
+    // ==========================================
+    // UI UPDATES & EVENT LISTENERS
+    // ==========================================
+    function updateUI() {
+      document.getElementById('scoreText').innerText = gameState.score;
+      
+      if (gameState.score > gameState.highScore) {
+        gameState.highScore = gameState.score;
+        localStorage.setItem('bedhil_highscore', gameState.highScore.toString());
+      }
+      document.getElementById('highScoreText').innerText = gameState.highScore;
+
+      // Hearts
+      document.getElementById('heartsText').innerText = '❤'.repeat(Math.max(0, gameState.lives)) + '♡'.repeat(Math.max(0, 3 - gameState.lives));
+
+      // Word Clue Bar
+      const clueBox = document.getElementById('wordClueContainer');
+      if (gameState.mode === 'words' && gameState.currentWordObj) {
+        clueBox.classList.remove('hidden');
+        document.getElementById('wordTargetText').innerText = gameState.currentWordObj.word;
+        document.getElementById('wordProgressText').innerText = `${gameState.wordIndex + 1}/${gameState.currentWordObj.syllables.length}`;
+      } else {
+        clueBox.classList.add('hidden');
+      }
+    }
+
+    function endGame() {
+      gameState.isGameOver = true;
+      document.getElementById('finalScoreText').innerText = gameState.score;
+      document.getElementById('gameOverModal').classList.remove('hidden');
+    }
+
+    // Cannon Slider Drag Control
+    const slider = document.getElementById('cannonSlider');
+    slider.addEventListener('input', (e) => {
+      gameState.cannonPos = parseFloat(e.target.value);
+      document.getElementById('cannonWrap').style.left = `${gameState.cannonPos}%`;
+      document.getElementById('aimLaser').style.left = `${gameState.cannonPos}%`;
+      document.getElementById('posPercentText').innerText = `${Math.round(gameState.cannonPos)}%`;
+    });
+
+    // Keyboard Controls
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        shootCannon();
+      } else if (e.code === 'ArrowLeft') {
+        gameState.cannonPos = Math.max(8, gameState.cannonPos - 5);
+        slider.value = gameState.cannonPos;
+        slider.dispatchEvent(new Event('input'));
+      } else if (e.code === 'ArrowRight') {
+        gameState.cannonPos = Math.min(92, gameState.cannonPos + 5);
+        slider.value = gameState.cannonPos;
+        slider.dispatchEvent(new Event('input'));
+      }
+    });
+
+    document.getElementById('shootBtn').addEventListener('click', shootCannon);
+
+    // Mode Buttons
+    document.getElementById('btnModeStandard').addEventListener('click', () => setMode('standard'));
+    document.getElementById('btnModeReverse').addEventListener('click', () => setMode('reverse'));
+    document.getElementById('btnModeWords').addEventListener('click', () => setMode('words'));
+
+    function setMode(mode) {
+      gameState.mode = mode;
+      document.getElementById('btnModeStandard').className = `w-full text-left px-3 py-2 rounded-xl border border-[#bcaaa4] ${mode === 'standard' ? 'bg-[#3e2723] text-[#ffecb3]' : 'bg-[#efebe9] text-[#5d4037]'}`;
+      document.getElementById('btnModeReverse').className = `w-full text-left px-3 py-2 rounded-xl border border-[#bcaaa4] ${mode === 'reverse' ? 'bg-[#3e2723] text-[#ffecb3]' : 'bg-[#efebe9] text-[#5d4037]'}`;
+      document.getElementById('btnModeWords').className = `w-full text-left px-3 py-2 rounded-xl border border-[#bcaaa4] ${mode === 'words' ? 'bg-[#3e2723] text-[#ffecb3]' : 'bg-[#efebe9] text-[#5d4037]'}`;
+
+      const modeNames = { standard: 'Standard (Latin → Jawa)', reverse: 'Terbalik (Jawa → Latin)', words: 'Rangkai Kata' };
+      document.getElementById('modeBadge').innerText = `Mode: ${modeNames[mode]}`;
+
+      initGame();
+    }
+
+    // Level Buttons
+    [1, 2, 3, 4].forEach(lvl => {
+      document.getElementById(`lvlBtn${lvl}`).addEventListener('click', () => {
+        gameState.level = lvl;
+        [1, 2, 3, 4].forEach(l => {
+          document.getElementById(`lvlBtn${l}`).className = `py-2 rounded-xl border border-[#5d4037] ${l === lvl ? 'bg-[#ffb300] text-[#3e2723]' : 'bg-[#efebe9] text-[#5d4037]'}`;
+        });
+
+        const descs = {
+          1: 'Level 1: Vokal Dasar (A, I, U) tanpa sandhangan panyigeg.',
+          2: 'Level 2: Tambah Ê pepet ꦼ, É taling ꦺ, O ꦺꦴ.',
+          3: 'Level 3: Tambah Cecak (-ng), Layar (-r), Wignyan (-h).',
+          4: 'Level 4: Lengkap + Pa Cerek (ꦉ) & Nga Lelet (ꦊ).'
+        };
+        document.getElementById('lvlDescText').innerText = descs[lvl];
+        initGame();
+      });
+    });
+
+    document.getElementById('btnChangeQuestion').addEventListener('click', () => nextQuestion());
+    document.getElementById('btnRestart').addEventListener('click', () => {
+      document.getElementById('gameOverModal').classList.add('hidden');
+      initGame();
+    });
+
+    // Modals
+    document.getElementById('btnOpenPaugeran').addEventListener('click', () => document.getElementById('paugeranModal').classList.remove('hidden'));
+    document.getElementById('btnClosePaugeran').addEventListener('click', () => document.getElementById('paugeranModal').classList.add('hidden'));
+
+    // Start Engine
+    initGame();
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
