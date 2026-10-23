@@ -3,1071 +3,674 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bedhil Aksara Jawa Deluxe Edition</title>
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- React 18, ReactDOM & Babel Standalone CDNs -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
-  <!-- Google Fonts: Noto Sans Javanese & Plus Jakarta Sans -->
+  <title>Bedhil Aksara Jawa (Deluxe Edition)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese:wght@500;700&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            jawa: ['"Noto Sans Javanese"', 'serif'],
-          },
-          colors: {
-            jawaDark: '#271c19',
-            jawaWood: '#3e2723',
-            jawaBrown: '#5d4037',
-            jawaGold: '#ffb300',
-            jawaCream: '#ffecb3',
-          }
-        }
-      }
-    }
-  </script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese:wght@400;700&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
-      margin: 0;
-      background-color: #271c19;
-      color: #3e2723;
-      user-select: none;
-      -webkit-user-select: none;
-      overflow-x: hidden;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    .bg-batik {
-      background: 
+      min-height: 100vh;
+      background:
         radial-gradient(1200px 600px at 20% -10%, #fff7e6 0%, transparent 60%),
         radial-gradient(900px 500px at 90% 0%, #ffe0b2 0%, transparent 50%),
         linear-gradient(180deg, #fdf6e3 0%, #efebe9 55%, #d7ccc8 100%);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      color: #3e2723;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-
-    .batik-overlay {
+    .batik {
       position: absolute; inset: 0; opacity: 0.06;
-      background-image: 
-        repeating-linear-gradient(45deg, #5d4037 0 1px, transparent 1px 14px),
-        repeating-linear-gradient(-45deg, #8d6e63 0 1px, transparent 1px 20px);
+      background-image:
+        repeating-linear-gradient(45deg, #5d4037 0 1px, transparent 1px 12px),
+        repeating-linear-gradient(-45deg, #8d6e63 0 1px, transparent 1px 18px);
       pointer-events: none;
     }
+    header {
+      width: 100%; max-width: 1000px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 18px;
+      background: #3e2723; color: #ffecb3;
+      box-shadow: 0 4px 18px rgba(62,39,35,0.3);
+      z-index: 10;
+    }
+    .brand { display: flex; flex-direction: column; line-height: 1.1; }
+    .brand .latin { font-weight: 800; letter-spacing: 0.04em; font-size: 16px; }
+    .brand .jawa { font-family: 'Noto Sans Javanese', serif; font-size: 18px; color: #ffcc80; margin-top: 2px; }
+    .stats { display: flex; gap: 10px; align-items: center; }
+    .stat-pill { background: #4e342e; border: 1px solid #6d4c41; padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; display: flex; gap: 6px; align-items: center; }
 
-    /* Target Cards & Floating Animations */
-    .target-card {
-      box-shadow: 0 6px 0 #3e2723, 0 10px 18px rgba(0,0,0,0.18);
-      transition: border-color 0.3s, background 0.3s, transform 0.2s;
+    .game-shell {
+      width: 100%; max-width: 1000px;
+      display: grid; grid-template-columns: 1fr 280px; gap: 16px;
+      padding: 16px;
+    }
+    @media (max-width: 840px) { .game-shell { grid-template-columns: 1fr; } }
+
+    .game-area {
+      position: relative;
+      height: 560px;
+      background: linear-gradient(180deg, #fff8e1 0%, #ffe0b2 35%, #f5d0a0 65%, #d7a76f 100%);
+      border-radius: 18px; overflow: hidden;
+      border: 3px solid #5d4037;
+      box-shadow: inset 0 0 0 4px #ffecb3, 0 12px 28px rgba(62,39,35,0.2);
+      display: flex; flex-direction: column;
+    }
+    canvas#particles { position: absolute; inset: 0; pointer-events: none; z-index: 12; }
+
+    .target-field { position: relative; flex: 1; }
+    .target-box {
+      position: absolute; top: 20px; width: 72px; height: 80px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #fff3e0 0%, #ffcc80 100%);
+      border: 3px solid #5d4037; border-radius: 14px;
+      box-shadow: 0 6px 0 #3e2723, 0 8px 16px rgba(0,0,0,0.15);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: 'Noto Sans Javanese', serif; font-size: 32px; color: #3e2723;
+      transition: top 0.1s linear;
+    }
+    .target-box.boss {
+      width: 140px; height: 100px; background: linear-gradient(180deg, #b71c1c 0%, #d32f2f 100%);
+      color: #fff; border-color: #5c0000; box-shadow: 0 6px 0 #3e0000;
+    }
+    .target-box.boss .boss-hp { font-family: sans-serif; font-size: 11px; font-weight: 800; background: #ffeb3b; color: #000; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
+
+    /* Cannon */
+    .cannon-stage { position: relative; height: 130px; width: 100%; pointer-events: none; }
+    .rail {
+      position: absolute; left: 3%; right: 3%; bottom: 15px; height: 22px;
+      background: #5d4037; border: 2px solid #3e2723; border-radius: 6px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.2);
+    }
+    .cannon-wrap {
+      position: absolute; bottom: 20px; width: 160px; height: 110px;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      transition: left 0.05s ease-out; z-index: 6;
+    }
+    .cannon-wrap.recoil { animation: recoil 0.15s ease; }
+    @keyframes recoil { 0%{ transform: translateX(-50%) translateY(0); } 50%{ transform: translateX(-50%) translateY(8px); } 100%{ transform: translateX(-50%) translateY(0); } }
+
+    .laser {
+      position: absolute; bottom: 110px; top: 0; width: 2px; transform: translateX(-50%);
+      background: repeating-linear-gradient(180deg, rgba(255,235,59,0.8) 0 8px, transparent 8px 16px);
+      pointer-events: none; z-index: 4;
     }
 
-    .target-float-0 { animation: floatAnim0 2.8s ease-in-out infinite; }
-    .target-float-1 { animation: floatAnim1 3.2s ease-in-out infinite; }
-    .target-float-2 { animation: floatAnim2 2.6s ease-in-out infinite; }
-    .target-float-3 { animation: floatAnim3 3.0s ease-in-out infinite; }
-    .target-float-4 { animation: floatAnim4 3.4s ease-in-out infinite; }
-
-    @keyframes floatAnim0 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-    @keyframes floatAnim1 { 0%, 100% { transform: translateY(-4px); } 50% { transform: translateY(6px); } }
-    @keyframes floatAnim2 { 0%, 100% { transform: translateY(2px); } 50% { transform: translateY(-7px); } }
-    @keyframes floatAnim3 { 0%, 100% { transform: translateY(-6px); } 50% { transform: translateY(4px); } }
-    @keyframes floatAnim4 { 0%, 100% { transform: translateY(1px); } 50% { transform: translateY(-9px); } }
-
-    .frozen-target {
-      border-color: #0288d1 !important;
-      background: linear-gradient(180deg, #e0f7fa 0%, #80deea 100%) !important;
-      box-shadow: 0 0 16px #00bcd4, 0 6px 0 #006064 !important;
-      animation: none !important;
+    .cannon-mouth { width: 44px; height: 24px; background: #1a1a1a; border: 3px solid #3e2723; border-bottom: 0; border-radius: 10px 10px 0 0; }
+    .cannon-body {
+      width: 150px; height: 60px; margin-top: -4px;
+      background: linear-gradient(180deg, #6d4c41 0%, #3e2723 100%);
+      border: 3px solid #1c110f; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 0 #1c110f;
+    }
+    .plaque {
+      background: #fffdf5; border: 3px solid #1c110f; border-radius: 10px;
+      padding: 6px 12px; font-weight: 900; font-size: 22px; color: #1a1a1a;
     }
 
-    .screen-shake {
-      animation: shake 0.35s cubic-bezier(.36,.07,.19,.97) both;
+    .projectile {
+      position: absolute; width: 22px; height: 22px; transform: translateX(-50%);
+      background: radial-gradient(circle at 30% 30%, #fff8e1, #ffb300 55%, #ff6f00);
+      border: 2px solid #1c110f; border-radius: 50%;
+      box-shadow: 0 0 12px #ffb300; z-index: 8;
     }
 
-    @keyframes shake {
-      10%, 90% { transform: translate3d(-2px, 0, 0); }
-      20%, 80% { transform: translate3d(4px, 0, 0); }
-      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
-      40%, 60% { transform: translate3d(6px, 0, 0); }
+    /* Controls */
+    .controls {
+      display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; padding: 10px;
+      background: #ffecb3; border-top: 3px solid #5d4037; z-index: 10;
     }
-
-    .cannon-recoil {
-      animation: recoilAnim 0.16s ease-out;
+    .control-box { background: #ffffffc9; border: 2px dashed #a1887f; border-radius: 12px; padding: 8px; touch-action: none; }
+    .control-label { font-size: 10px; font-weight: 800; color: #6d4c41; margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .slider-track {
+      height: 44px; background: #d7ccc8; border: 2px solid #8d6e63; border-radius: 999px;
+      position: relative; cursor: ew-resize; overflow: hidden;
     }
-
-    @keyframes recoilAnim {
-      0% { transform: translateX(-50%) translateY(0) scale(1); }
-      35% { transform: translateX(-50%) translateY(8px) scale(0.96); }
-      100% { transform: translateX(-50%) translateY(0) scale(1); }
+    .slider-thumb {
+      position: absolute; top: 50%; width: 44px; height: 36px; transform: translate(-50%,-50%);
+      background: #3e2723; border-radius: 999px; border: 2px solid #ffecb3;
+      display: flex; align-items: center; justify-content: center; color: #ffecb3; font-weight: 900;
     }
+    .shoot-btn {
+      width: 100%; height: 56px; background: linear-gradient(180deg, #ff6f00, #e65100);
+      border: 3px solid #1c110f; border-radius: 12px;
+      font-weight: 900; font-size: 16px; color: #fff8e1;
+      box-shadow: 0 5px 0 #1c110f; cursor: pointer;
+    }
+    .shoot-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #1c110f; }
 
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #efebe9; }
-    ::-webkit-scrollbar-thumb { background: #8d6e63; border-radius: 4px; }
+    /* Side Panel */
+    .side-panel { display: flex; flex-direction: column; gap: 10px; }
+    .card { background: #fffdf5; border: 2px solid #5d4037; border-radius: 14px; padding: 12px; box-shadow: 0 5px 0 #d7ccc8; }
+    .card h3 { font-size: 13px; margin-bottom: 8px; color: #3e2723; }
+    .btn-group { display: flex; gap: 6px; }
+    .btn-opt { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #bcaaa4; background: #efebe9; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; }
+    .btn-opt.active { background: #3e2723; color: #ffecb3; border-color: #3e2723; }
+
+    .powerups { display: flex; gap: 8px; }
+    .p-btn { flex: 1; padding: 8px; background: #fff3e0; border: 2px solid #ffb300; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; }
+    .p-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Overlay Modal */
+    .overlay {
+      position: absolute; inset: 0; background: rgba(62,39,35,0.85); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; z-index: 30;
+    }
+    .modal {
+      background: #fffdf5; border: 3px solid #ffb300; border-radius: 18px; padding: 20px;
+      width: 88%; max-width: 340px; text-align: center; box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+    }
+    .btn-primary { background: #3e2723; color: #ffecb3; border: 0; padding: 12px; border-radius: 999px; font-weight: 800; width: 100%; margin-top: 12px; cursor: pointer; }
   </style>
 </head>
-<body class="min-h-screen bg-batik flex flex-col items-center">
+<body>
+  <div class="batik"></div>
+  <header>
+    <div class="brand">
+      <div class="latin">BEDHIL AKSARA JAWA</div>
+      <div class="jawa">ꦧꦼꦝꦶꦭ꧀ꦲꦏ꧀ꦱꦫꦗꦮ</div>
+    </div>
+    <div class="stats">
+      <div class="stat-pill">⭐ <span id="scoreText">0</span></div>
+      <div class="stat-pill">Lv <span id="levelText">1</span></div>
+      <div class="stat-pill" id="heartsText">❤❤❤</div>
+    </div>
+  </header>
 
-  <div class="batik-overlay"></div>
+  <div class="game-shell">
+    <div class="game-area" id="gameArea">
+      <canvas id="particles"></canvas>
+      <div class="target-field" id="targetField"></div>
 
-  <!-- React Root App -->
-  <div id="root" class="w-full max-w-5xl relative z-10 p-2 sm:p-4"></div>
+      <div class="laser" id="laserLine"></div>
 
-  <!-- React Application Logic -->
-  <script type="text/babel">
-    const { useState, useEffect, useRef, useCallback } = React;
+      <div class="cannon-stage">
+        <div class="rail"></div>
+        <div class="cannon-wrap" id="cannonWrap">
+          <div class="cannon-mouth"></div>
+          <div class="cannon-body">
+            <div class="plaque" id="cannonPlaque">KANG</div>
+          </div>
+        </div>
+      </div>
 
-    // ==========================================
-    // 1. DATA DICTIONARIES & HELPER FUNCTIONS
-    // ==========================================
-    const CONSONANTS = {
-      h: { latin: 'H', jawa: 'ꦲ' },
-      n: { latin: 'N', jawa: 'ꦤ' },
-      c: { latin: 'C', jawa: 'ꦕ' },
-      r: { latin: 'R', jawa: 'ꦫ' },
-      k: { latin: 'K', jawa: 'ꦏ' },
-      d: { latin: 'D', jawa: 'ꦢ' },
-      t: { latin: 'T', jawa: 'ꦠ' },
-      s: { latin: 'S', jawa: 'ꦱ' },
-      w: { latin: 'W', jawa: 'ꦮ' },
-      l: { latin: 'L', jawa: 'ꦭ' },
-      p: { latin: 'P', jawa: 'ꦥ' },
-      dh: { latin: 'DH', jawa: 'ꦝ' },
-      j: { latin: 'J', jawa: 'ꦗ' },
-      y: { latin: 'Y', jawa: 'ꦪ' },
-      m: { latin: 'M', jawa: 'ꦩ' },
-      g: { latin: 'G', jawa: 'ꦒ' },
-      b: { latin: 'B', jawa: 'ꦧ' },
-      th: { latin: 'TH', jawa: 'ꦛ' },
-      ng: { latin: 'NG', jawa: 'ꦔ' },
-      ny: { latin: 'NY', jawa: 'ꦚ' }
+      <div class="controls">
+        <div class="control-box" id="sliderBox">
+          <div class="control-label"><span>GESER POSISI MERIAM</span><span id="posPercent">50%</span></div>
+          <div class="slider-track" id="sliderTrack">
+            <div class="slider-thumb" id="sliderThumb" style="left: 50%;">↔</div>
+          </div>
+        </div>
+        <div class="control-box">
+          <div class="control-label"><span>TEMBAK</span><span>[SPACE]</span></div>
+          <button class="shoot-btn" id="shootBtn">💥 TEMBAK!</button>
+        </div>
+      </div>
+
+      <!-- Game Over Modal -->
+      <div class="overlay" id="gameOverModal" style="display: none;">
+        <div class="modal">
+          <h2 style="font-family:'Noto Sans Javanese'; font-size: 28px;">ꦒꦩꦺꦎꦮ꦳ꦼꦂ</h2>
+          <h3 style="margin-top: 4px;">Permainan Selesai</h3>
+          <div style="font-size: 32px; font-weight: 900; margin: 10px 0;" id="finalScore">0 Poin</div>
+          <p style="font-size: 13px; color: #8d6e63;" id="highScoreText">Rekor Tertinggi: 0</p>
+          <button class="btn-primary" id="restartBtn">MAIN LAGI</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="side-panel">
+      <div class="card">
+        <h3>🎯 MODE PERMAINAN</h3>
+        <div class="btn-group">
+          <div class="btn-opt active" data-mode="standard">Standard</div>
+          <div class="btn-opt" data-mode="terbalik">Terbalik</div>
+          <div class="btn-opt" data-mode="rangkai">Kata Utuh</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>✨ PUSAKA POWER-UP</h3>
+        <div class="powerups">
+          <button class="p-btn" id="btnPasopati">🏹 Pasopati<br><small>(Hapus 2)</small></button>
+          <button class="p-btn" id="btnGundala">⚡ Gundala<br><small>(Beku)</small></button>
+          <button class="p-btn" id="btnBanyu">💧 Banyu<br><small>(+1 Nyawa)</small></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📜 PAUGERAN SINGKAT</h3>
+        <p style="font-size: 12px; line-height: 1.5; color: #5d4037;">
+          • <b>Pepet (ꦼ)</b> = Ê (seperti 'segar')<br>
+          • <b>Taling (ꦺ)</b> = É (seperti 'sate')<br>
+          • <b>Cecak (ꦁ)</b> = Mati -NG<br>
+          • <b>Layar (ꦂ)</b> = Mati -R<br>
+          • <b>Wignyan (ꦃ)</b> = Mati -H
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- DICTIONARY & DATA SETS ---
+    const AKSARA_MAPPING = {
+      ha:'ꦲ', na:'ꦤ', ca:'ꦕ', ra:'ꦫ', ka:'ꦏ', da:'ꦢ', ta:'ꦠ', sa:'ꦱ', wa:'ꦮ', la:'ꦭ',
+      pa:'ꦥ', dha:'ꦝ', ja:'ꦗ', ya:'ꦪ', ma:'ꦩ', ga:'ꦒ', ba:'ꦧ', tha:'ꦛ', nga:'ꦔ', nya:'ꦚ'
     };
-
-    const SPECIAL_CONS = {
-      "rê": { latin: 'RÊ', jawa: 'ꦉ' },
-      "lê": { latin: 'LÊ', jawa: 'ꦊ' }
-    };
-
-    const VOWELS = {
-      a: { latin: 'A', jawa: '' },
-      i: { latin: 'I', jawa: 'ꦶ' },
-      u: { latin: 'U', jawa: 'ꦸ' },
-      ê: { latin: 'Ê', jawa: 'ꦼ' },
-      é: { latin: 'É', jawa: 'ꦺ' },
-      o: { latin: 'O', jawa: 'ꦺꦴ' }
-    };
-
-    const SUFFIXES = {
-      none: { latin: '', jawa: '' },
-      ng: { latin: 'NG', jawa: 'ꦁ' },
-      r: { latin: 'R', jawa: 'ꦂ' },
-      h: { latin: 'H', jawa: 'ꦃ' }
-    };
-
-    const WORD_DATABASE = [
-      { word: "MAJAPAHIT", syllables: ["MA", "JA", "PA", "HIT"], jawaSyllables: ["ꦩ", "ꦗ", "ꦥ", "ꦲꦶꦠ꧀"] },
-      { word: "SURABAYA", syllables: ["SU", "RA", "BA", "YA"], jawaSyllables: ["ꦱꦸ", "ꦫ", "ꦧ", "ꦪ"] },
-      { word: "GATOTKACA", syllables: ["GA", "TOT", "KA", "CA"], jawaSyllables: ["ꦒ", "ꦠꦺꦴꦠ꧀", "ꦏ", "ꦕ"] },
-      { word: "BATIK", syllables: ["BA", "TIK"], jawaSyllables: ["ꦧ", "ꦠꦶꦏ꧀"] },
-      { word: "NUSANTARA", syllables: ["NU", "SAN", "TA", "RA"], jawaSyllables: ["ꦤꦸ", "ꦱꦤ꧀", "ꦠ", "ꦫ"] },
-      { word: "SEMARANG", syllables: ["SE", "MA", "RANG"], jawaSyllables: ["ꦱꦼ", "ꦩ", "ꦫꦁ"] }
+    const VOWELS = [
+      { l:'a', s:'' }, { l:'i', s:'ꦶ' }, { l:'u', s:'ꦸ' },
+      { l:'ê', s:'ꦼ' }, { l:'é', s:'ꦺ' }, { l:'o', s:'ꦺꦴ' }
+    ];
+    const SUFFIXES = [
+      { l:'', s:'' }, { l:'ng', s:'ꦁ' }, { l:'r', s:'ꦂ' }, { l:'h', s:'ꦃ' }
+    ];
+    const WORDS_BANK = [
+      { latin: ["MA", "JA", "PA", "HIT"], jawa: ["ꦩ", "ꦗ", "ꦥ", "ꦲꦶꦠ꧀"] },
+      { latin: ["SU", "RA", "BA", "YA"], jawa: ["ꦱꦸ", "ꦫ", "ꦧ", "ꦪ"] },
+      { latin: ["GA", "TOT", "KA", "CA"], jawa: ["ꦒ", "ꦠꦺꦴꦠ꧀", "ꦏ", "ꦕ"] },
+      { latin: ["MA", "TA", "RAM"], jawa: ["ꦩ", "ꦠ", "ꦫꦩ꧀"] },
+      { latin: ["BA", "TIK"], jawa: ["ꦧ", "ꦠꦶꦏ꧀"] }
     ];
 
-    function makeItem(cKey, vKey, sKey) {
-      if (SPECIAL_CONS[cKey]) {
-        const sc = SPECIAL_CONS[cKey];
-        const v = VOWELS[vKey] || VOWELS.a;
-        const s = SUFFIXES[sKey] || SUFFIXES.none;
-        return {
-          latin: `${sc.latin}${vKey === 'a' ? '' : v.latin}${s.latin}`,
-          jawa: `${sc.jawa}${vKey === 'a' ? '' : v.jawa}${s.jawa}`,
-          cKey, vKey, sKey
+    // --- GAME STATE ---
+    let score = 0;
+    let level = 1;
+    let lives = 3;
+    let gameMode = 'standard'; // 'standard', 'terbalik', 'rangkai'
+    let cannonPos = 50; // percentage
+    let targets = [];
+    let projectiles = [];
+    let particles = [];
+    let currentQuestion = null;
+    let wordProgressIdx = 0;
+    let currentWord = null;
+    let isFrozen = false;
+    let isGameOver = false;
+
+    // --- AUDIO SYNTHESIZER ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'shoot') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+      } else if (type === 'hit') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08); // E5
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+      } else if (type === 'wrong') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(110, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+      }
+    }
+
+    // --- DOM ELEMENTS ---
+    const gameArea = document.getElementById('gameArea');
+    const targetField = document.getElementById('targetField');
+    const cannonWrap = document.getElementById('cannonWrap');
+    const cannonPlaque = document.getElementById('cannonPlaque');
+    const laserLine = document.getElementById('laserLine');
+    const sliderTrack = document.getElementById('sliderTrack');
+    const sliderThumb = document.getElementById('sliderThumb');
+    const posPercent = document.getElementById('posPercent');
+    const shootBtn = document.getElementById('shootBtn');
+    const scoreText = document.getElementById('scoreText');
+    const levelText = document.getElementById('levelText');
+    const heartsText = document.getElementById('heartsText');
+    const gameOverModal = document.getElementById('gameOverModal');
+    const finalScore = document.getElementById('finalScore');
+    const highScoreText = document.getElementById('highScoreText');
+    const restartBtn = document.getElementById('restartBtn');
+
+    // Canvas Particles
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() {
+      canvas.width = gameArea.clientWidth;
+      canvas.height = gameArea.clientHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // --- GENERATORS ---
+    function getRandomAksara() {
+      const keys = Object.keys(AKSARA_MAPPING);
+      const cons = keys[Math.floor(Math.random() * keys.length)];
+      const v = VOWELS[Math.floor(Math.random() * (level > 1 ? VOWELS.length : 3))];
+      const s = SUFFIXES[Math.floor(Math.random() * (level > 2 ? SUFFIXES.length : 1))];
+
+      const latin = (cons + (v.l === 'a' ? 'a' : v.l) + s.l).toUpperCase();
+      const jawa = AKSARA_MAPPING[cons] + v.s + s.s;
+      return { latin, jawa };
+    }
+
+    function spawnWave() {
+      targetField.innerHTML = '';
+      targets = [];
+
+      let correctItem;
+      if (gameMode === 'rangkai') {
+        if (!currentWord || wordProgressIdx >= currentWord.latin.length) {
+          currentWord = WORDS_BANK[Math.floor(Math.random() * WORDS_BANK.length)];
+          wordProgressIdx = 0;
+        }
+        correctItem = {
+          latin: currentWord.latin[wordProgressIdx],
+          jawa: currentWord.jawa[wordProgressIdx]
         };
+      } else {
+        correctItem = getRandomAksara();
       }
 
-      const c = CONSONANTS[cKey] || CONSONANTS.k;
-      const v = VOWELS[vKey] || VOWELS.a;
-      const s = SUFFIXES[sKey] || SUFFIXES.none;
+      currentQuestion = correctItem;
 
-      return {
-        latin: `${c.latin}${v.latin}${s.latin}`,
-        jawa: `${c.jawa}${v.jawa}${s.jawa}`,
-        cKey, vKey, sKey
-      };
-    }
+      // Update Cannon Plaque
+      if (gameMode === 'terbalik') {
+        cannonPlaque.textContent = correctItem.jawa;
+      } else {
+        cannonPlaque.textContent = correctItem.latin;
+      }
 
-    function generateRandomItem(level) {
-      let allowedCons = Object.keys(CONSONANTS);
-      let allowedVowels = ['a', 'i', 'u'];
-      let allowedSuffixes = ['none'];
-
-      if (level >= 2) allowedVowels = ['a', 'i', 'u', 'ê', 'é', 'o'];
-      if (level >= 3) allowedSuffixes = ['none', 'ng', 'r', 'h'];
-      if (level >= 4) allowedCons = [...allowedCons, 'rê', 'lê'];
-
-      const cKey = allowedCons[Math.floor(Math.random() * allowedCons.length)];
-      const vKey = allowedVowels[Math.floor(Math.random() * allowedVowels.length)];
-      const sKey = allowedSuffixes[Math.floor(Math.random() * allowedSuffixes.length)];
-
-      return makeItem(cKey, vKey, sKey);
-    }
-
-    function generateTargetDeck(correctItem, level) {
-      const deck = [{ ...correctItem, isCorrect: true }];
-      let attempts = 0;
-
-      while (deck.length < 5 && attempts < 100) {
-        attempts++;
-        const dummy = generateRandomItem(level);
-        if (dummy.jawa !== correctItem.jawa && !deck.some(d => d.jawa === dummy.jawa)) {
-          deck.push({ ...dummy, isCorrect: false });
+      // Generate 4 targets (1 correct, 3 wrong)
+      const options = [correctItem];
+      while (options.length < 4) {
+        const dummy = getRandomAksara();
+        if (!options.some(o => o.latin === dummy.latin)) {
+          options.push(dummy);
         }
       }
 
-      // Shuffle deck
-      deck.sort(() => Math.random() - 0.5);
+      // Shuffle options
+      options.sort(() => Math.random() - 0.5);
 
-      // Assign horizontal lane positions (10%, 30%, 50%, 70%, 90%)
-      const xLanes = [10, 30, 50, 70, 90];
-      return deck.map((item, idx) => ({
-        id: 'tgt_' + Math.random().toString(36).substring(2, 7),
-        ...item,
-        x: xLanes[idx],
-        y: 18, // Fixed top row %
-        lane: idx
-      }));
-    }
+      const positions = [12, 36, 62, 86];
+      options.forEach((opt, idx) => {
+        const div = document.createElement('div');
+        div.className = 'target-box';
+        div.style.left = positions[idx] + '%';
+        div.style.top = '20px';
 
-    // ==========================================
-    // 2. AUDIO SYNTHESIZER (Web Audio API)
-    // ==========================================
-    const AudioSynth = {
-      ctx: null,
-      init() {
-        if (!this.ctx) {
-          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
-      },
-      playShoot() {
-        try {
-          this.init();
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(220, this.ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.12);
-          gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 0.12);
-        } catch(e) {}
-      },
-      playHitCorrect() {
-        try {
-          this.init();
-          const now = this.ctx.currentTime;
-          [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.04);
-            gain.gain.setValueAtTime(0.2, now + idx * 0.04);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.25);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now + idx * 0.04);
-            osc.stop(now + idx * 0.04 + 0.25);
-          });
-        } catch(e) {}
-      },
-      playHitWrong() {
-        try {
-          this.init();
-          const now = this.ctx.currentTime;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(140, now);
-          osc.frequency.linearRampToValueAtTime(80, now + 0.25);
-          gain.gain.setValueAtTime(0.3, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(now + 0.25);
-        } catch(e) {}
-      },
-      playPowerup() {
-        try {
-          this.init();
-          const now = this.ctx.currentTime;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(300, now);
-          osc.frequency.exponentialRampToValueAtTime(900, now + 0.3);
-          gain.gain.setValueAtTime(0.25, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.3);
-        } catch(e) {}
-      }
-    };
-
-    // ==========================================
-    // 3. MAIN REACT COMPONENT
-    // ==========================================
-    function App() {
-      // Game States
-      const [score, setScore] = useState(0);
-      const [highScore, setHighScore] = useState(() => {
-        try { return parseInt(localStorage.getItem('bedhil_deluxe_highscore') || '0'); } catch(e) { return 0; }
-      });
-      const [lives, setLives] = useState(3);
-      const [level, setLevel] = useState(1);
-      const [mode, setMode] = useState('standard'); // 'standard', 'reverse', 'words'
-      const [cannonPos, setCannonPos] = useState(50); // 10% - 90%
-      const [freezeTimer, setFreezeTimer] = useState(0);
-      
-      const [currentQuestion, setCurrentQuestion] = useState(null);
-      const [targets, setTargets] = useState([]);
-      
-      // Word Mode State
-      const [wordObj, setWordObj] = useState(null);
-      const [wordIndex, setWordIndex] = useState(0);
-
-      // Boss State
-      const [bossActive, setBossActive] = useState(false);
-      const [bossHp, setBossHp] = useState(100);
-      const [bossTarget, setBossTarget] = useState(null);
-
-      // Modals & Effects
-      const [isGameOver, setIsGameOver] = useState(false);
-      const [paugeranOpen, setPaugeranOpen] = useState(false);
-      const [screenShake, setScreenShake] = useState(false);
-      const [recoil, setRecoil] = useState(false);
-      const [floatingTexts, setFloatingTexts] = useState([]);
-
-      // Refs for Physics Loop
-      const bulletsRef = useRef([]);
-      const powerupsRef = useRef([]);
-      const canvasRef = useRef(null);
-      const particlesRef = useRef([]);
-      const gameStateRef = useRef({});
-
-      // Synchronize latest state to ref for animation loop
-      useEffect(() => {
-        gameStateRef.current = {
-          score, lives, level, mode, cannonPos, freezeTimer,
-          currentQuestion, targets, bossActive, bossHp, isGameOver,
-          wordObj, wordIndex
-        };
-      }, [score, lives, level, mode, cannonPos, freezeTimer, currentQuestion, targets, bossActive, bossHp, isGameOver, wordObj, wordIndex]);
-
-      // Initialize or Load Next Question
-      const loadNextQuestion = useCallback((newScore = score, newMode = mode, newLevel = level) => {
-        if (isGameOver) return;
-
-        // Check Boss Event Trigger (every 100 points)
-        if (newScore > 0 && newScore % 100 === 0 && !bossActive) {
-          setBossActive(true);
-          setBossHp(100);
-          const q = generateRandomItem(newLevel);
-          setBossTarget(q);
-          setCurrentQuestion(q);
-          setTargets([]);
-          return;
-        }
-
-        let q = null;
-        if (newMode === 'words') {
-          let currentW = wordObj;
-          let idx = wordIndex;
-          if (!currentW || idx >= currentW.syllables.length) {
-            currentW = WORD_DATABASE[Math.floor(Math.random() * WORD_DATABASE.length)];
-            idx = 0;
-            setWordObj(currentW);
-            setWordIndex(0);
-          }
-          const sylLatin = currentW.syllables[idx];
-          const sylJawa = currentW.jawaSyllables[idx];
-          q = { latin: sylLatin, jawa: sylJawa, cKey: 'k', vKey: 'a', sKey: 'none' };
+        if (gameMode === 'terbalik') {
+          div.textContent = opt.latin;
         } else {
-          q = generateRandomItem(newLevel);
+          div.textContent = opt.jawa;
         }
 
-        setCurrentQuestion(q);
-        const deck = generateTargetDeck(q, newLevel);
-        setTargets(deck);
-      }, [score, mode, level, bossActive, isGameOver, wordObj, wordIndex]);
+        targetField.appendChild(div);
 
-      // Initialize Game
-      useEffect(() => {
-        loadNextQuestion(0, mode, level);
-      }, []);
-
-      // Canvas Explosions
-      const addParticles = (xPct, yPct, color = '#ffb300', count = 20) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const px = (xPct / 100) * canvas.width;
-        const py = (yPct / 100) * canvas.height;
-        for (let i = 0; i < count; i++) {
-          const angle = Math.random() * Math.PI * 2;
-          const speed = 2 + Math.random() * 5;
-          particlesRef.current.push({
-            x: px, y: py,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            radius: 2 + Math.random() * 4,
-            color: color,
-            alpha: 1,
-            decay: 0.02 + Math.random() * 0.03
-          });
-        }
-      };
-
-      // Add Floating Score Indicator Text
-      const spawnFloatingText = (x, y, text, color) => {
-        const id = 'ft_' + Math.random().toString(36).substring(2, 7);
-        setFloatingTexts(prev => [...prev, { id, x, y, text, color }]);
-        setTimeout(() => {
-          setFloatingTexts(prev => prev.filter(item => item.id !== id));
-        }, 800);
-      };
-
-      // Shoot Bullet Action
-      const shootCannon = () => {
-        if (isGameOver) return;
-        AudioSynth.playShoot();
-
-        setRecoil(true);
-        setTimeout(() => setRecoil(false), 150);
-
-        bulletsRef.current.push({
-          id: 'b_' + Math.random().toString(36).substring(2, 7),
-          x: cannonPos,
-          y: 78 // Starts near cannon mouth
+        targets.push({
+          element: div,
+          x: positions[idx],
+          y: 20,
+          data: opt,
+          isCorrect: opt.latin === correctItem.latin
         });
-      };
-
-      // Power-up Activations
-      const triggerPowerup = (type) => {
-        AudioSynth.playPowerup();
-        if (type === 'pasopati') {
-          // Destroys 2 wrong distractor targets
-          setTargets(prev => {
-            let removed = 0;
-            return prev.filter(t => {
-              if (!t.isCorrect && removed < 2) {
-                addParticles(t.x, t.y, '#00bcd4', 25);
-                removed++;
-                return false;
-              }
-              return true;
-            });
-          });
-        } else if (type === 'gundala') {
-          setFreezeTimer(5);
-        } else if (type === 'banyuMili') {
-          setLives(prev => Math.min(3, prev + 1));
-        }
-      };
-
-      // Main Loop (Bullets, Collisions, Powerups, Canvas)
-      useEffect(() => {
-        let animationFrameId;
-
-        const loop = () => {
-          const state = gameStateRef.current;
-
-          // Freeze Timer countdown
-          if (state.freezeTimer > 0) {
-            setFreezeTimer(prev => Math.max(0, prev - 0.016));
-          }
-
-          // Random Powerup Spawner (1.5% chance if empty)
-          if (powerupsRef.current.length === 0 && Math.random() < 0.0015) {
-            const types = ['pasopati', 'gundala', 'banyuMili'];
-            powerupsRef.current.push({
-              id: 'p_' + Math.random().toString(36).substring(2, 7),
-              type: types[Math.floor(Math.random() * types.length)],
-              x: 15 + Math.random() * 70,
-              y: 15
-            });
-          }
-
-          // Move Powerups
-          powerupsRef.current.forEach(p => p.y += 0.15);
-
-          // Move Bullets
-          const bullets = bulletsRef.current;
-          for (let i = bullets.length - 1; i >= 0; i--) {
-            const b = bullets[i];
-            b.y -= 2.0; // Bullet upward speed
-
-            // Check Collision with Powerup
-            for (let j = powerupsRef.current.length - 1; j >= 0; j--) {
-              const pw = powerupsRef.current[j];
-              if (Math.abs(b.x - pw.x) < 8 && Math.abs(b.y - pw.y) < 8) {
-                triggerPowerup(pw.type);
-                addParticles(pw.x, pw.y, '#00e676', 20);
-                powerupsRef.current.splice(j, 1);
-                bullets.splice(i, 1);
-                break;
-              }
-            }
-
-            if (!bullets[i]) continue;
-
-            // Check Collision with Boss (if active)
-            if (state.bossActive) {
-              if (b.y <= 28 && Math.abs(b.x - 50) < 25) {
-                AudioSynth.playHitCorrect();
-                addParticles(b.x, b.y, '#ef4444', 30);
-                bullets.splice(i, 1);
-
-                setBossHp(prevHp => {
-                  const nextHp = prevHp - 25;
-                  if (nextHp <= 0) {
-                    setBossActive(false);
-                    setScore(s => {
-                      const newS = s + 50;
-                      if (newS > highScore) {
-                        setHighScore(newS);
-                        try { localStorage.setItem('bedhil_deluxe_highscore', newS.toString()); } catch(e) {}
-                      }
-                      return newS;
-                    });
-                    loadNextQuestion(state.score + 50, state.mode, state.level);
-                  }
-                  return Math.max(0, nextHp);
-                });
-                continue;
-              }
-            }
-
-            // Check Collision with Target Boxes
-            if (state.targets && state.targets.length > 0) {
-              for (let k = 0; k < state.targets.length; k++) {
-                const t = state.targets[k];
-                if (Math.abs(b.x - t.x) < 7 && Math.abs(b.y - t.y) < 7) {
-                  bullets.splice(i, 1);
-
-                  if (t.isCorrect) {
-                    // CORRECT HIT!
-                    AudioSynth.playHitCorrect();
-                    addParticles(t.x, t.y, '#ffb300', 30);
-                    spawnFloatingText(t.x, t.y, '+10', '#ffb300');
-
-                    const newScore = state.score + 10;
-                    setScore(newScore);
-                    if (newScore > highScore) {
-                      setHighScore(newScore);
-                      try { localStorage.setItem('bedhil_deluxe_highscore', newScore.toString()); } catch(e) {}
-                    }
-
-                    if (state.mode === 'words' && state.wordObj) {
-                      setWordIndex(idx => idx + 1);
-                    }
-
-                    loadNextQuestion(newScore, state.mode, state.level);
-                  } else {
-                    // WRONG HIT!
-                    AudioSynth.playHitWrong();
-                    addParticles(t.x, t.y, '#ef4444', 25);
-                    spawnFloatingText(t.x, t.y, '-5', '#ef4444');
-
-                    setScore(s => Math.max(0, s - 5));
-                    setScreenShake(true);
-                    setTimeout(() => setScreenShake(false), 350);
-
-                    setLives(l => {
-                      const newL = l - 1;
-                      if (newL <= 0) setIsGameOver(true);
-                      return Math.max(0, newL);
-                    });
-                  }
-                  break;
-                }
-              }
-            }
-
-            // Remove Bullet offscreen
-            if (b && b.y < 5) {
-              bullets.splice(i, 1);
-            }
-          }
-
-          // Remove Powerups offscreen
-          powerupsRef.current = powerupsRef.current.filter(p => p.y < 85);
-
-          // Render Canvas Particles
-          const canvas = canvasRef.current;
-          if (canvas) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let pIdx = particlesRef.current.length - 1; pIdx >= 0; pIdx--) {
-              const pt = particlesRef.current[pIdx];
-              pt.x += pt.vx;
-              pt.y += pt.vy;
-              pt.alpha -= pt.decay;
-
-              if (pt.alpha <= 0) {
-                particlesRef.current.splice(pIdx, 1);
-                continue;
-              }
-
-              ctx.save();
-              ctx.globalAlpha = pt.alpha;
-              ctx.fillStyle = pt.color;
-              ctx.beginPath();
-              ctx.arc(pt.x, pt.y, pt.radius, 0, Math.PI * 2);
-              ctx.fill();
-              ctx.restore();
-            }
-          }
-
-          animationFrameId = requestAnimationFrame(loop);
-        };
-
-        animationFrameId = requestAnimationFrame(loop);
-        return () => cancelAnimationFrame(animationFrameId);
-      }, [loadNextQuestion, highScore]);
-
-      // Handle Resize Canvas
-      useEffect(() => {
-        const handleResize = () => {
-          if (canvasRef.current) {
-            canvasRef.current.width = canvasRef.current.offsetWidth;
-            canvasRef.current.height = canvasRef.current.offsetHeight;
-          }
-        };
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-      }, []);
-
-      // Keyboard Listener
-      useEffect(() => {
-        const handleKeyDown = (e) => {
-          if (e.code === 'Space') {
-            e.preventDefault();
-            shootCannon();
-          } else if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
-            setCannonPos(pos => Math.max(10, pos - 5));
-          } else if (e.code === 'ArrowRight' || e.code === 'KeyD') {
-            setCannonPos(pos => Math.min(90, pos + 5));
-          }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-      }, [isGameOver, cannonPos]);
-
-      // Restart Game
-      const restartGame = () => {
-        setScore(0);
-        setLives(3);
-        setIsGameOver(false);
-        setBossActive(false);
-        setFreezeTimer(0);
-        bulletsRef.current = [];
-        powerupsRef.current = [];
-        loadNextQuestion(0, mode, level);
-      };
-
-      return (
-        <div className="flex flex-col gap-3">
-          
-          <!-- TOP HUD HEADER -->
-          <header className="bg-[#3e2723] text-[#ffecb3] rounded-2xl p-3 sm:p-4 shadow-xl border-2 border-[#5d4037] flex flex-wrap justify-between items-center gap-2">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#ffb300] text-[#3e2723] rounded-xl flex items-center justify-center font-black text-xl shadow-md border-2 border-[#fff8e1]">
-                🎯
-              </div>
-              <div>
-                <h1 className="font-black text-sm sm:text-base tracking-wider leading-none text-[#fff8e1]">BEDHIL AKSARA JAWA</h1>
-                <p className="font-jawa text-xs sm:text-sm text-[#ffcc80] mt-1">ꦧꦼꦝꦶꦭ꧀ꦲꦏ꧀ꦱꦫꦗꦮ - DELUXE</p>
-              </div>
-            </div>
-
-            <!-- Stats Pills -->
-            <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold">
-              <div className="bg-[#4e342e] border border-[#6d4c41] px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[#ffe0b2]">
-                <span>⭐ Skor:</span>
-                <span className="text-[#ffb300] font-extrabold text-base">{score}</span>
-              </div>
-
-              <div className="bg-[#4e342e] border border-[#6d4c41] px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[#ffe0b2]">
-                <span>🏆 Rekor:</span>
-                <span className="text-[#fff8e1] font-bold">{highScore}</span>
-              </div>
-
-              <div className="bg-[#4e342e] border border-[#6d4c41] px-3 py-1.5 rounded-full flex items-center gap-1 text-red-400 font-mono tracking-widest text-base">
-                {'❤'.repeat(Math.max(0, lives)) + '♡'.repeat(Math.max(0, 3 - lives))}
-              </div>
-            </div>
-          </header>
-
-          <!-- MAIN GAME SHELL GRID -->
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-
-            <!-- GAME BATTLEFIELD (3 COLS) -->
-            <div className="lg:col-span-3 flex flex-col gap-3">
-
-              <div id="gameArea" className={`relative w-full h-[500px] sm:h-[540px] bg-gradient-to-b from-[#fff8e1] via-[#ffe0b2] to-[#d7a76f] rounded-2xl border-4 border-[#3e2723] shadow-2xl overflow-hidden flex flex-col justify-between ${screenShake ? 'screen-shake' : ''}`}>
-                
-                <!-- Canvas Overlay for Particle FX -->
-                <canvas ref={canvasRef} class="absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
-
-                <!-- Floating Text Indicators (+10 / -5) -->
-                {floatingTexts.map(item => (
-                  <div key={item.id} className="absolute font-black text-2xl z-30 pointer-events-none animate-bounce" style={{ left: `${item.x}%`, top: `${item.y}%`, color: item.color }}>
-                    {item.text}
-                  </div>
-                ))}
-
-                <!-- Top Status Notification Badges -->
-                <div className="absolute top-3 left-3 right-3 z-10 flex justify-between items-center pointer-events-none">
-                  <div className="bg-[#3e2723]/90 text-[#ffecb3] border border-[#ffb300] px-3 py-1 rounded-full text-xs font-bold shadow-md">
-                    Mode: {mode === 'standard' ? 'Standard (Latin → Aksara)' : mode === 'reverse' ? 'Terbalik (Aksara → Latin)' : 'Rangkai Kata'}
-                  </div>
-
-                  {freezeTimer > 0 && (
-                    <div className="bg-[#0288d1] text-white border border-[#80deea] px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse">
-                      ⚡ GUNDALA (Beku): {Math.ceil(freezeTimer)}s
-                    </div>
-                  )}
-                </div>
-
-                <!-- BOSS CONTAINER (Active during Boss events) -->
-                {bossActive && (
-                  <div className="absolute top-10 left-1/2 -translate-x-1/2 w-11/12 max-w-md bg-[#3e2723]/95 text-[#fff8e1] border-2 border-red-600 rounded-2xl p-3 shadow-2xl z-30 flex flex-col items-center gap-2">
-                    <div className="flex justify-between w-full text-xs font-bold px-1">
-                      <span className="text-red-400 font-extrabold flex items-center gap-1">👹 BOS DENAWA</span>
-                      <span className="text-[#ffb300]">{bossHp}/100 HP</span>
-                    </div>
-                    <div className="w-full h-3 bg-[#271c19] rounded-full overflow-hidden border border-[#5d4037]">
-                      <div className="h-full bg-gradient-to-r from-red-600 to-yellow-500 transition-all duration-300" style={{ width: `${bossHp}%` }}></div>
-                    </div>
-                    <div className="text-xs text-[#ffe0b2] font-semibold text-center">
-                      Tameng Aksara Bos: <span className="font-jawa text-xl font-bold text-[#ffb300] bg-[#4e342e] px-2 py-0.5 rounded border border-[#ffb300]">{bossTarget ? bossTarget.jawa : 'ꦏ'}</span>
-                    </div>
-                  </div>
-                )}
-
-                <!-- WORD MODE CLUE BANNER -->
-                {mode === 'words' && wordObj && (
-                  <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-[#3e2723] text-[#fff8e1] border-2 border-[#ffb300] rounded-xl px-4 py-2 shadow-xl z-20 flex items-center gap-3">
-                    <span className="text-xs font-bold text-[#ffb300]">KATA:</span>
-                    <span className="font-extrabold text-base tracking-widest text-[#fff8e1]">{wordObj.word}</span>
-                    <span className="bg-[#5d4037] text-xs px-2 py-0.5 rounded text-[#ffe0b2] font-mono">
-                      {wordIndex + 1}/{wordObj.syllables.length}
-                    </span>
-                  </div>
-                )}
-
-                <!-- TARGET BOXES CONTAINER (TOP ROW) -->
-                <div className="relative w-full h-full">
-                  {!bossActive && targets.map((t, idx) => (
-                    <div
-                      key={t.id}
-                      className={`target-card absolute -translate-x-1/2 w-16 h-18 sm:w-20 sm:h-22 bg-gradient-to-b from-[#fff3e0] to-[#ffcc80] border-3 border-[#5d4037] rounded-2xl flex items-center justify-center text-center font-bold text-xl sm:text-2xl text-[#3e2723] ${freezeTimer > 0 ? 'frozen-target' : `target-float-${idx % 5}`}`}
-                      style={{ left: `${t.x}%`, top: `${t.y}%` }}
-                    >
-                      <span className={mode === 'reverse' ? 'font-bold' : 'font-jawa text-2xl sm:text-3xl'}>
-                        {mode === 'reverse' ? t.latin : t.jawa}
-                      </span>
-                    </div>
-                  ))}
-
-                  <!-- POWERUP FLOATING ITEMS -->
-                  {powerupsRef.current.map(pw => (
-                    <div
-                      key={pw.id}
-                      className="absolute -translate-x-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#ffb300] shadow-lg flex items-center justify-center text-lg animate-bounce z-20"
-                      style={{ left: `${pw.x}%`, top: `${pw.y}%` }}
-                    >
-                      {pw.type === 'pasopati' ? '🏹' : pw.type === 'gundala' ? '⚡' : '💧'}
-                    </div>
-                  ))}
-
-                  <!-- PROJECTILES (BULLETS) -->
-                  {bulletsRef.current.map(b => (
-                    <div
-                      key={b.id}
-                      className="absolute -translate-x-1/2 w-5 h-5 rounded-full bg-gradient-to-r from-yellow-300 to-orange-500 border border-black shadow-[0_0_12px_#ff9800] z-20"
-                      style={{ left: `${b.x}%`, top: `${b.y}%` }}
-                    />
-                  ))}
-                </div>
-
-                <!-- RAIL & CANNON AREA -->
-                <div className="relative w-full h-32 bg-gradient-to-t from-[#271c19] via-[#3e2723] to-transparent flex flex-col justify-end items-center pb-2 z-10">
-                  
-                  <!-- Rail Line -->
-                  <div className="absolute bottom-6 left-4 right-4 h-5 bg-gradient-to-b from-[#8d6e63] via-[#5d4037] to-[#271c19] border-2 border-[#1c110f] rounded-lg shadow-inner flex items-center justify-between px-2">
-                    {[1, 2, 3, 4, 5, 6, 7].map(n => (
-                      <div key={n} className="w-1 h-3 bg-[#1c110f] rounded"></div>
-                    ))}
-                  </div>
-
-                  <!-- Laser Aim Line -->
-                  <div className="absolute bottom-12 w-0.5 border-l border-dashed border-[#ffeb3b] shadow-[0_0_8px_#ffeb3b] z-0 pointer-events-none transition-all duration-75" style={{ height: '340px', left: `${cannonPos}%` }}></div>
-
-                  <!-- Cannon Assembly -->
-                  <div className={`absolute bottom-5 w-44 h-28 -translate-x-1/2 flex flex-col items-center justify-end z-10 pointer-events-none transition-all duration-75 ${recoil ? 'cannon-recoil' : ''}`} style={{ left: `${cannonPos}%` }}>
-                    
-                    <!-- Cannon Barrel -->
-                    <div className="w-12 h-7 bg-gradient-to-r from-[#1a1a1a] via-[#4e342e] to-[#1a1a1a] border-2 border-[#1c110f] rounded-t-lg shadow-lg relative flex justify-center items-center">
-                      <div className="w-8 h-2 bg-[#271c19] rounded-t"></div>
-                    </div>
-
-                    <!-- Cannon Body & Plaque -->
-                    <div className="w-40 h-16 bg-gradient-to-b from-[#6d4c41] via-[#4e342e] to-[#271c19] border-3 border-[#1c110f] rounded-2xl shadow-xl flex items-center justify-center relative border-2 border-[#1c110f]">
-                      <div className="bg-[#fffdf5] border-2 border-[#1c110f] rounded-xl px-3 py-1 shadow-md text-center">
-                        <span className={mode === 'reverse' ? 'font-jawa font-bold text-2xl text-[#1a1a1a]' : 'font-extrabold text-xl text-[#1a1a1a] tracking-wider'}>
-                          {currentQuestion ? (mode === 'reverse' ? currentQuestion.jawa : currentQuestion.latin) : '...'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- Cannon Wheels -->
-                    <div className="flex justify-between w-32 -mt-3 z-20">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8d6e63] to-[#271c19] border-2 border-[#1c110f] flex items-center justify-center shadow-md">
-                        <div className="w-2.5 h-2.5 bg-[#ffecb3] rounded-full border border-black"></div>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8d6e63] to-[#271c19] border-2 border-[#1c110f] flex items-center justify-center shadow-md">
-                        <div className="w-2.5 h-2.5 bg-[#ffecb3] rounded-full border border-black"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-
-              <!-- CONTROLS & SLIDER BAR -->
-              <div className="bg-[#fff8e1] border-3 border-[#3e2723] rounded-2xl p-3 shadow-lg flex flex-col sm:flex-row items-center gap-3">
-                <div className="w-full sm:flex-1 flex flex-col gap-1">
-                  <div className="flex justify-between text-xs font-bold text-[#5d4037]">
-                    <span>↔ GESER MERIAM (Panah Kiri/Kanan)</span>
-                    <span>{Math.round(cannonPos)}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="10"
-                    max="90"
-                    value={cannonPos}
-                    onChange={(e) => setCannonPos(parseFloat(e.target.value))}
-                    className="w-full h-8 bg-[#d7ccc8] rounded-lg appearance-none cursor-pointer accent-[#ff6f00]"
-                  />
-                </div>
-
-                <button
-                  onClick={shootCannon}
-                  className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-b from-[#ff6f00] to-[#e65100] text-[#fff8e1] font-black text-base rounded-xl border-2 border-[#1c110f] shadow-[0_5px_0_#1c110f] active:translate-y-1 active:shadow-[0_2px_0_#1c110f] flex items-center justify-center gap-2 transition-all"
-                >
-                  <span>💥 TEMBAK!</span>
-                  <span className="text-xs font-normal opacity-80">(Spacebar)</span>
-                </button>
-              </div>
-
-            </div>
-
-            <!-- SIDEBAR PANEL (1 COL) -->
-            <div className="flex flex-col gap-3">
-              
-              <!-- Mode Selection -->
-              <div className="bg-[#fffdf5] border-2 border-[#5d4037] rounded-2xl p-3.5 shadow-md">
-                <h2 className="font-bold text-xs uppercase tracking-wider text-[#5d4037] mb-2 flex items-center gap-1.5">
-                  <span>🎮</span> MODE PERMAINAN
-                </h2>
-                <div className="flex flex-col gap-1.5 text-xs font-bold">
-                  <button
-                    onClick={() => { setMode('standard'); loadNextQuestion(score, 'standard', level); }}
-                    className={`w-full text-left px-3 py-2 rounded-xl border border-[#bcaaa4] transition-all ${mode === 'standard' ? 'bg-[#3e2723] text-[#ffecb3]' : 'bg-[#efebe9] text-[#5d4037]'}`}
-                  >
-                    1. Standard (Latin → Jawa)
-                  </button>
-                  <button
-                    onClick={() => { setMode('reverse'); loadNextQuestion(score, 'reverse', level); }}
-                    className={`w-full text-left px-3 py-2 rounded-xl border border-[#bcaaa4] transition-all ${mode === 'reverse' ? 'bg-[#3e2723] text-[#ffecb3]' : 'bg-[#efebe9] text-[#5d4037]'}`}
-                  >
-                    2. Terbalik (Jawa → Latin)
-                  </button>
-                  <button
-                    onClick={() => { setMode('words'); loadNextQuestion(score, 'words', level); }}
-                    className={`w-full text-left px-3 py-2 rounded-xl border border-[#bcaaa4] transition-all ${mode === 'words' ? 'bg-[#3e2723] text-[#ffecb3]' : 'bg-[#efebe9] text-[#5d4037]'}`}
-                  >
-                    3. Rangkai Kata Utuh
-                  </button>
-                </div>
-              </div>
-
-              <!-- Level Selector -->
-              <div className="bg-[#fffdf5] border-2 border-[#5d4037] rounded-2xl p-3.5 shadow-md">
-                <div className="flex justify-between items-center mb-2">
-                  <h2 className="font-bold text-xs uppercase tracking-wider text-[#5d4037] flex items-center gap-1.5">
-                    <span>📶</span> TINGKAT KESULITAN
-                  </h2>
-                  <button
-                    onClick={() => loadNextQuestion(score, mode, level)}
-                    className="text-[10px] font-bold bg-[#efebe9] text-[#5d4037] px-2 py-1 rounded-lg border border-[#bcaaa4] hover:bg-[#d7ccc8]"
-                  >
-                    🔄 Acak Soal
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-4 gap-1.5 font-extrabold text-xs">
-                  {[1, 2, 3, 4].map(l => (
-                    <button
-                      key={l}
-                      onClick={() => { setLevel(l); loadNextQuestion(score, mode, l); }}
-                      className={`py-2 rounded-xl border border-[#5d4037] ${level === l ? 'bg-[#ffb300] text-[#3e2723]' : 'bg-[#efebe9] text-[#5d4037]'}`}
-                    >
-                      Lv {l}
-                    </button>
-                  ))}
-                </div>
-
-                <p className="text-[11px] text-[#5d4037] mt-2 leading-tight">
-                  {level === 1 && "Level 1: Vokal Dasar (A, I, U) tanpa sandhangan panyigeg."}
-                  {level === 2 && "Level 2: Tambah Ê pepet ꦼ, É taling ꦺ, O ꦺꦴ."}
-                  {level === 3 && "Level 3: Tambah Cecak (-ng), Layar (-r), Wignyan (-h)."}
-                  {level === 4 && "Level 4: Lengkap + Pa Cerek (ꦉ) & Nga Lelet (ꦊ)."}
-                </p>
-              </div>
-
-              <!-- Power-Up Info -->
-              <div className="bg-[#fffdf5] border-2 border-[#5d4037] rounded-2xl p-3.5 shadow-md">
-                <h2 className="font-bold text-xs uppercase tracking-wider text-[#5d4037] mb-2 flex items-center gap-1.5">
-                  <span>✨</span> PUSAKA CETBANG
-                </h2>
-                <div className="space-y-1.5 text-[11px] text-[#5d4037]">
-                  <div className="flex items-center gap-2 bg-[#fff3e0] p-1.5 rounded-lg border border-[#ffe0b2]">
-                    <span class="text-base">🏹</span>
-                    <div><b>Pasopati:</b> Hapus 2 opsi salah secara otomatis</div>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#e0f7fa] p-1.5 rounded-lg border border-[#b2ebf2]">
-                    <span class="text-base">⚡</span>
-                    <div><b>Gundala:</b> Bekukan gerak target 5 detik</div>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#e8f5e9] p-1.5 rounded-lg border border-[#c8e6c9]">
-                    <span class="text-base">💧</span>
-                    <div><b>Banyu Mili:</b> Pulihkan +1 Nyawa</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Paugeran Dictionary Button -->
-              <button
-                onClick={() => setPaugeranOpen(true)}
-                className="w-full py-2.5 bg-[#3e2723] text-[#ffecb3] font-bold text-xs rounded-xl border border-[#1c110f] shadow-md hover:bg-[#4e342e] transition-all flex items-center justify-center gap-2"
-              >
-                <span>📜</span> KAMUS PAUGERAN AKSARA
-              </button>
-
-            </div>
-
-          </div>
-
-          <!-- PAUGERAN DICTIONARY MODAL -->
-          {paugeranOpen && (
-            <div className="fixed inset-0 bg-[#3e2723]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <div className="bg-[#fffdf5] border-4 border-[#ffb300] rounded-3xl p-5 max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl relative">
-                <div className="flex justify-between items-center mb-4 border-b border-[#d7ccc8] pb-2">
-                  <h2 className="font-extrabold text-lg text-[#3e2723] flex items-center gap-2">
-                    📜 PAUGERAN AKSARA JAWA
-                  </h2>
-                  <button
-                    onClick={() => setPaugeranOpen(false)}
-                    className="w-8 h-8 rounded-full bg-[#efebe9] text-[#5d4037] font-bold text-sm flex items-center justify-center border border-[#bcaaa4] hover:bg-[#d7ccc8]"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <div className="space-y-4 text-xs text-[#3e2723]">
-                  <div>
-                    <h3 className="font-extrabold text-sm text-[#ff6f00] mb-1">1. Sandhangan Swara (Vokal)</h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2]"><b>Wulu (ꦶ)</b> = Vocal I (Ki = ꦏꦶ)</div>
-                      <div className="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2]"><b>Suku (ꦸ)</b> = Vocal U (Ku = ꦏꦸ)</div>
-                      <div className="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2]"><b>Pepet (ꦼ)</b> = Vocal Ê (Kê = ꦏꦼ)</div>
-                      <div className="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2]"><b>Taling (ꦺ)</b> = Vocal É (Ké = ꦏꦺ)</div>
-                      <div className="bg-[#fff3e0] p-2 rounded-lg border border-[#ffe0b2] col-span-2"><b>Taling-Tarung (ꦺꦴ)</b> = Vocal O (Ko = ꦏꦺꦴ)</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-extrabold text-sm text-[#ff6f00] mb-1">2. Sandhangan Panyigeg (Mati)</h3>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-[#efebe9] p-2 rounded-lg border border-[#d7ccc8]"><b>Cecak (ꦁ)</b> = -NG</div>
-                      <div className="bg-[#efebe9] p-2 rounded-lg border border-[#d7ccc8]"><b>Layar (ꦂ)</b> = -R</div>
-                      <div className="bg-[#efebe9] p-2 rounded-lg border border-[#d7ccc8]"><b>Wignyan (ꦃ)</b> = -H</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-extrabold text-sm text-[#ff6f00] mb-1">3. Aksara Khusus</h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-[#fffecb] p-2 rounded-lg border border-[#fff59d]"><b>Pa Cerek (ꦉ)</b> = RÊ</div>
-                      <div className="bg-[#fffecb] p-2 rounded-lg border border-[#fff59d]"><b>Nga Lelet (ꦊ)</b> = LÊ</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <!-- GAME OVER MODAL -->
-          {isGameOver && (
-            <div className="fixed inset-0 bg-[#3e2723]/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-              <div className="bg-[#fffdf5] border-4 border-[#ffb300] rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl relative">
-                <div className="font-jawa text-3xl text-[#3e2723] mb-1">ꦒꦩꦺꦎꦮ꦳ꦼꦂ</div>
-                <h2 className="font-black text-2xl text-[#3e2723] mb-2">GAME OVER!</h2>
-                
-                <div className="bg-[#fff3e0] rounded-2xl p-4 my-4 border border-[#ffe0b2]">
-                  <div className="text-xs font-bold text-[#8d6e63]">SKOR AKHIR</div>
-                  <div className="text-4xl font-extrabold text-[#ff6f00]">{score}</div>
-                </div>
-
-                <button
-                  onClick={restartGame}
-                  className="w-full py-3 bg-[#3e2723] text-[#ffecb3] font-black text-base rounded-2xl border-2 border-[#1c110f] shadow-lg hover:bg-[#4e342e] transition-all"
-                >
-                  🔄 MAIN LAGI
-                </button>
-              </div>
-            </div>
-          )}
-
-        </div>
-      );
+      });
     }
 
-    // Render React Application
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    // --- CONTROLS LOGIC ---
+    let isDragging = false;
+    function updateCannonPosition(clientX) {
+      const rect = sliderTrack.getBoundingClientRect();
+      let pos = ((clientX - rect.left) / rect.width) * 100;
+      pos = Math.max(5, Math.min(95, pos));
+      cannonPos = pos;
+      cannonWrap.style.left = pos + '%';
+      laserLine.style.left = pos + '%';
+      sliderThumb.style.left = pos + '%';
+      posPercent.textContent = Math.round(pos) + '%';
+    }
+
+    sliderTrack.addEventListener('pointerdown', (e) => {
+      isDragging = true;
+      updateCannonPosition(e.clientX);
+      sliderTrack.setPointerCapture(e.pointerId);
+    });
+    sliderTrack.addEventListener('pointermove', (e) => {
+      if (isDragging) updateCannonPosition(e.clientX);
+    });
+    sliderTrack.addEventListener('pointerup', () => isDragging = false);
+
+    window.addEventListener('keydown', (e) => {
+      if (isGameOver) return;
+      if (e.code === 'ArrowLeft') {
+        cannonPos = Math.max(5, cannonPos - 5);
+        updateCannonPositionByVal(cannonPos);
+      } else if (e.code === 'ArrowRight') {
+        cannonPos = Math.min(95, cannonPos + 5);
+        updateCannonPositionByVal(cannonPos);
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        shoot();
+      }
+    });
+
+    function updateCannonPositionByVal(pos) {
+      cannonWrap.style.left = pos + '%';
+      laserLine.style.left = pos + '%';
+      sliderThumb.style.left = pos + '%';
+      posPercent.textContent = Math.round(pos) + '%';
+    }
+
+    shootBtn.addEventListener('click', shoot);
+
+    function shoot() {
+      if (isGameOver) return;
+      playSound('shoot');
+
+      cannonWrap.classList.add('recoil');
+      setTimeout(() => cannonWrap.classList.remove('recoil'), 150);
+
+      const pDiv = document.createElement('div');
+      pDiv.className = 'projectile';
+      pDiv.style.left = cannonPos + '%';
+      pDiv.style.bottom = '110px';
+      gameArea.appendChild(pDiv);
+
+      projectiles.push({
+        element: pDiv,
+        x: cannonPos,
+        y: 110 // height in px from bottom
+      });
+    }
+
+    // --- PARTICLES ---
+    function createExplosion(x, y) {
+      for (let i = 0; i < 25; i++) {
+        particles.push({
+          x: x, y: y,
+          vx: (Math.random() - 0.5) * 8,
+          vy: (Math.random() - 0.5) * 8,
+          radius: Math.random() * 4 + 2,
+          color: ['#ffb300', '#ff6f00', '#ffe0b2', '#ffffff'][Math.floor(Math.random()*4)],
+          alpha: 1
+        });
+      }
+    }
+
+    // --- GAME LOOP ---
+    function update() {
+      if (isGameOver) return;
+
+      // 1. Move Projectiles
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        const p = projectiles[i];
+        p.y += 12;
+        p.element.style.bottom = p.y + 'px';
+
+        // Collision Check
+        const pRect = p.element.getBoundingClientRect();
+
+        for (let j = 0; j < targets.length; j++) {
+          const t = targets[j];
+          const tRect = t.element.getBoundingClientRect();
+
+          if (
+            pRect.left < tRect.right &&
+            pRect.right > tRect.left &&
+            pRect.top < tRect.bottom &&
+            pRect.bottom > tRect.top
+          ) {
+            // Hit!
+            createExplosion(
+              tRect.left - gameArea.getBoundingClientRect().left + tRect.width / 2,
+              tRect.top - gameArea.getBoundingClientRect().top + tRect.height / 2
+            );
+
+            if (t.isCorrect) {
+              playSound('hit');
+              score += 10;
+              scoreText.textContent = score;
+
+              if (score >= level * 50) {
+                level++;
+                levelText.textContent = level;
+              }
+
+              if (gameMode === 'rangkai') wordProgressIdx++;
+
+              spawnWave();
+            } else {
+              playSound('wrong');
+              lives--;
+              updateHearts();
+              score = Math.max(0, score - 5);
+              scoreText.textContent = score;
+
+              if (lives <= 0) endGame();
+            }
+
+            p.element.remove();
+            projectiles.splice(i, 1);
+            break;
+          }
+        }
+
+        if (p.y > gameArea.clientHeight) {
+          p.element.remove();
+          projectiles.splice(i, 1);
+        }
+      }
+
+      // 2. Fall Targets
+      if (!isFrozen) {
+        targets.forEach(t => {
+          t.y += 0.2 + (level * 0.05);
+          t.element.style.top = t.y + 'px';
+
+          if (t.y > gameArea.clientHeight - 160) {
+            playSound('wrong');
+            lives--;
+            updateHearts();
+            if (lives <= 0) endGame();
+            else spawnWave();
+          }
+        });
+      }
+
+      // 3. Particles
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.alpha -= 0.03;
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, pt.alpha);
+        ctx.fillStyle = pt.color;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        if (pt.alpha <= 0) particles.splice(i, 1);
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    function updateHearts() {
+      heartsText.textContent = '❤'.repeat(Math.max(0, lives)) + '♡'.repeat(Math.max(0, 3 - lives));
+    }
+
+    function endGame() {
+      isGameOver = true;
+      const hs = localStorage.getItem('bedhil_highscore') || 0;
+      if (score > hs) localStorage.setItem('bedhil_highscore', score);
+
+      finalScore.textContent = score + ' Poin';
+      highScoreText.textContent = 'Rekor Tertinggi: ' + Math.max(score, hs);
+      gameOverModal.style.display = 'flex';
+    }
+
+    restartBtn.addEventListener('click', () => {
+      score = 0; level = 1; lives = 3; isGameOver = false;
+      scoreText.textContent = score;
+      levelText.textContent = level;
+      updateHearts();
+      gameOverModal.style.display = 'none';
+      spawnWave();
+      requestAnimationFrame(update);
+    });
+
+    // --- POWER-UPS ---
+    document.getElementById('btnPasopati').addEventListener('click', () => {
+      let removed = 0;
+      targets.forEach(t => {
+        if (!t.isCorrect && removed < 2) {
+          t.element.style.visibility = 'hidden';
+          removed++;
+        }
+      });
+    });
+
+    document.getElementById('btnGundala').addEventListener('click', () => {
+      isFrozen = true;
+      setTimeout(() => isFrozen = false, 4000);
+    });
+
+    document.getElementById('btnBanyu').addEventListener('click', () => {
+      if (lives < 3) {
+        lives++;
+        updateHearts();
+      }
+    });
+
+    // --- MODE SWITCHING ---
+    document.querySelectorAll('.btn-opt').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        gameMode = e.target.dataset.mode;
+        spawnWave();
+      });
+    });
+
+    // INIT
+    spawnWave();
+    requestAnimationFrame(update);
   </script>
 </body>
 </html>
