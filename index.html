@@ -51,7 +51,7 @@
 
     .game-area {
       position: relative;
-      height: 560px;
+      height: 580px;
       background: linear-gradient(180deg, #fff8e1 0%, #ffe0b2 35%, #f5d0a0 65%, #d7a76f 100%);
       border-radius: 18px; overflow: hidden;
       border: 3px solid #5d4037;
@@ -61,18 +61,45 @@
     canvas#particles { position: absolute; inset: 0; pointer-events: none; z-index: 12; }
 
     .target-field { position: relative; flex: 1; }
+    
+    /* Optimized Target Box layout so Jawa text never overflows */
     .target-box {
-      position: absolute; top: 20px; width: 72px; height: 80px;
+      position: absolute; top: 20px; 
+      width: 82px; height: 88px;
       transform: translateX(-50%);
       background: linear-gradient(180deg, #fff3e0 0%, #ffcc80 100%);
       border: 3px solid #5d4037; border-radius: 14px;
       box-shadow: 0 6px 0 #3e2723, 0 8px 16px rgba(0,0,0,0.15);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      font-family: 'Noto Sans Javanese', serif; font-size: 32px; color: #3e2723;
+      padding: 4px;
+      overflow: hidden;
+      box-sizing: border-box;
+      color: #3e2723;
       transition: top 0.1s linear;
+      word-break: break-all;
+      text-align: center;
+      line-height: 1.1;
     }
+    .target-box .jawa-text {
+      font-family: 'Noto Sans Javanese', serif;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+    }
+    .target-box .latin-text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+    }
+
     .target-box.boss {
-      width: 140px; height: 100px; background: linear-gradient(180deg, #b71c1c 0%, #d32f2f 100%);
+      width: 150px; height: 104px; background: linear-gradient(180deg, #b71c1c 0%, #d32f2f 100%);
       color: #fff; border-color: #5c0000; box-shadow: 0 6px 0 #3e0000;
     }
     .target-box.boss .boss-hp { font-family: sans-serif; font-size: 11px; font-weight: 800; background: #ffeb3b; color: #000; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
@@ -85,7 +112,7 @@
       box-shadow: inset 0 2px 0 rgba(255,255,255,0.2);
     }
     .cannon-wrap {
-      position: absolute; bottom: 20px; width: 160px; height: 110px;
+      position: absolute; bottom: 20px; width: 170px; height: 110px;
       transform: translateX(-50%);
       display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
       transition: left 0.05s ease-out; z-index: 6;
@@ -99,9 +126,9 @@
       pointer-events: none; z-index: 4;
     }
 
-    .cannon-mouth { width: 44px; height: 24px; background: #1a1a1a; border: 3px solid #3e2723; border-bottom: 0; border-radius: 10px 10px 0 0; }
+    .cannon-mouth { width: 46px; height: 24px; background: #1a1a1a; border: 3px solid #3e2723; border-bottom: 0; border-radius: 10px 10px 0 0; }
     .cannon-body {
-      width: 150px; height: 60px; margin-top: -4px;
+      width: 160px; height: 60px; margin-top: -4px;
       background: linear-gradient(180deg, #6d4c41 0%, #3e2723 100%);
       border: 3px solid #1c110f; border-radius: 16px;
       display: flex; align-items: center; justify-content: center;
@@ -109,7 +136,13 @@
     }
     .plaque {
       background: #fffdf5; border: 3px solid #1c110f; border-radius: 10px;
-      padding: 6px 12px; font-weight: 900; font-size: 22px; color: #1a1a1a;
+      padding: 4px 12px; font-weight: 900; font-size: 22px; color: #1a1a1a;
+      max-width: 140px; text-align: center; overflow: hidden; white-space: nowrap;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .plaque.jawa-plaque {
+      font-family: 'Noto Sans Javanese', serif;
+      font-size: 22px;
     }
 
     .projectile {
@@ -193,7 +226,7 @@
         <div class="cannon-wrap" id="cannonWrap">
           <div class="cannon-mouth"></div>
           <div class="cannon-body">
-            <div class="plaque" id="cannonPlaque">KANG</div>
+            <div class="plaque" id="cannonPlaque">TI</div>
           </div>
         </div>
       </div>
@@ -353,16 +386,30 @@
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // --- GENERATORS ---
+    // --- TRANSLITERATION FIX & FONT AUTO-SCALING ---
     function getRandomAksara() {
       const keys = Object.keys(AKSARA_MAPPING);
-      const cons = keys[Math.floor(Math.random() * keys.length)];
+      const consKey = keys[Math.floor(Math.random() * keys.length)]; // e.g. "ta", "dha", "nga"
+      
+      // FIX 1: Extract consonant root without trailing 'a' (e.g. "ta" -> "t", "nga" -> "ng", "dha" -> "dh")
+      const consStem = consKey.slice(0, -1);
+      
       const v = VOWELS[Math.floor(Math.random() * (level > 1 ? VOWELS.length : 3))];
       const s = SUFFIXES[Math.floor(Math.random() * (level > 2 ? SUFFIXES.length : 1))];
 
-      const latin = (cons + (v.l === 'a' ? 'a' : v.l) + s.l).toUpperCase();
-      const jawa = AKSARA_MAPPING[cons] + v.s + s.s;
+      // Reconstruct clean Latin without double vowels (e.g. "t" + "i" + "" = "TI", NOT "TAI")
+      const latin = (consStem + v.l + s.l).toUpperCase();
+      const jawa = AKSARA_MAPPING[consKey] + v.s + s.s;
       return { latin, jawa };
+    }
+
+    // FIX 2: Helper to calculate optimal font size for Aksara Jawa based on character length & Pangkon
+    function getJawaFontSize(jawaStr) {
+      const len = jawaStr.length;
+      if (len >= 4) return '20px';
+      if (len >= 3) return '24px';
+      if (len >= 2) return '28px';
+      return '34px';
     }
 
     function spawnWave() {
@@ -388,8 +435,12 @@
       // Update Cannon Plaque
       if (gameMode === 'terbalik') {
         cannonPlaque.textContent = correctItem.jawa;
+        cannonPlaque.className = 'plaque jawa-plaque';
+        cannonPlaque.style.fontSize = getJawaFontSize(correctItem.jawa);
       } else {
         cannonPlaque.textContent = correctItem.latin;
+        cannonPlaque.className = 'plaque';
+        cannonPlaque.style.fontSize = '22px';
       }
 
       // Generate 4 targets (1 correct, 3 wrong)
@@ -412,9 +463,16 @@
         div.style.top = '20px';
 
         if (gameMode === 'terbalik') {
-          div.textContent = opt.latin;
+          const span = document.createElement('span');
+          span.className = 'latin-text';
+          span.textContent = opt.latin;
+          div.appendChild(span);
         } else {
-          div.textContent = opt.jawa;
+          const span = document.createElement('span');
+          span.className = 'jawa-text';
+          span.textContent = opt.jawa;
+          span.style.fontSize = getJawaFontSize(opt.jawa);
+          div.appendChild(span);
         }
 
         targetField.appendChild(div);
@@ -491,7 +549,7 @@
       projectiles.push({
         element: pDiv,
         x: cannonPos,
-        y: 110 // height in px from bottom
+        y: 110
       });
     }
 
