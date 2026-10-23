@@ -62,34 +62,33 @@
 
     .target-field { position: relative; flex: 1; }
     
-    /* Optimized Target Box layout so Jawa text never overflows */
+    /* Target Box with ample spacing so Javanese diacritics & pangkon never get clipped */
     .target-box {
       position: absolute; top: 20px; 
-      width: 82px; height: 88px;
+      width: 86px; height: 92px;
       transform: translateX(-50%);
       background: linear-gradient(180deg, #fff3e0 0%, #ffcc80 100%);
       border: 3px solid #5d4037; border-radius: 14px;
       box-shadow: 0 6px 0 #3e2723, 0 8px 16px rgba(0,0,0,0.15);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 4px;
-      overflow: hidden;
+      padding: 4px 6px;
+      overflow: visible; /* Prevents clipping of tall/wide sandhangan & pangkon */
       box-sizing: border-box;
       color: #3e2723;
       transition: top 0.1s linear;
-      word-break: break-all;
       text-align: center;
-      line-height: 1.1;
     }
     .target-box .jawa-text {
       font-family: 'Noto Sans Javanese', serif;
       width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: clip;
+      line-height: 1;
+      padding-bottom: 2px; /* Provides room for sandhangan ngisor (suku, etc) */
     }
     .target-box .latin-text {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -99,7 +98,7 @@
     }
 
     .target-box.boss {
-      width: 150px; height: 104px; background: linear-gradient(180deg, #b71c1c 0%, #d32f2f 100%);
+      width: 154px; height: 108px; background: linear-gradient(180deg, #b71c1c 0%, #d32f2f 100%);
       color: #fff; border-color: #5c0000; box-shadow: 0 6px 0 #3e0000;
     }
     .target-box.boss .boss-hp { font-family: sans-serif; font-size: 11px; font-weight: 800; background: #ffeb3b; color: #000; padding: 2px 8px; border-radius: 999px; margin-top: 4px; }
@@ -136,13 +135,14 @@
     }
     .plaque {
       background: #fffdf5; border: 3px solid #1c110f; border-radius: 10px;
-      padding: 4px 12px; font-weight: 900; font-size: 22px; color: #1a1a1a;
-      max-width: 140px; text-align: center; overflow: hidden; white-space: nowrap;
+      padding: 4px 10px; font-weight: 900; font-size: 22px; color: #1a1a1a;
+      max-width: 146px; text-align: center; overflow: visible; white-space: nowrap;
       display: flex; align-items: center; justify-content: center;
     }
     .plaque.jawa-plaque {
       font-family: 'Noto Sans Javanese', serif;
-      font-size: 22px;
+      font-size: 20px;
+      line-height: 1;
     }
 
     .projectile {
@@ -391,25 +391,31 @@
       const keys = Object.keys(AKSARA_MAPPING);
       const consKey = keys[Math.floor(Math.random() * keys.length)]; // e.g. "ta", "dha", "nga"
       
-      // FIX 1: Extract consonant root without trailing 'a' (e.g. "ta" -> "t", "nga" -> "ng", "dha" -> "dh")
       const consStem = consKey.slice(0, -1);
       
       const v = VOWELS[Math.floor(Math.random() * (level > 1 ? VOWELS.length : 3))];
       const s = SUFFIXES[Math.floor(Math.random() * (level > 2 ? SUFFIXES.length : 1))];
 
-      // Reconstruct clean Latin without double vowels (e.g. "t" + "i" + "" = "TI", NOT "TAI")
       const latin = (consStem + v.l + s.l).toUpperCase();
       const jawa = AKSARA_MAPPING[consKey] + v.s + s.s;
       return { latin, jawa };
     }
 
-    // FIX 2: Helper to calculate optimal font size for Aksara Jawa based on character length & Pangkon
+    // Helper to calculate optimal font size for Aksara Jawa based on character count & pangkon presence
     function getJawaFontSize(jawaStr) {
-      const len = jawaStr.length;
-      if (len >= 4) return '20px';
-      if (len >= 3) return '24px';
-      if (len >= 2) return '28px';
-      return '34px';
+      // Array.from splits Unicode surrogate pairs and Javanese diacritics/combiners cleanly
+      const charCount = Array.from(jawaStr).length;
+      const hasPangkon = jawaStr.includes('꧀');
+      
+      if (hasPangkon || charCount >= 4) {
+        return '18px';
+      } else if (charCount === 3) {
+        return '21px';
+      } else if (charCount === 2) {
+        return '25px';
+      } else {
+        return '28px'; // Single character with basic sandhangan fits perfectly without clipping
+      }
     }
 
     function spawnWave() {
